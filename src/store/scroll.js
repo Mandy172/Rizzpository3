@@ -19,4 +19,5 @@ export const useScrollStore = create((set) => ({
   toggleMuted: () => set((state) => ({ muted: !state.muted })),
 }));
 
+export const useStore = useScrollStore;
 export default useScrollStore;
