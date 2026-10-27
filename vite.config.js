@@ -8,12 +8,16 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          three:  ["three", "@react-three/fiber", "@react-three/drei"],
-          react:  ["react", "react-dom"],
-          lenis:  ["lenis"],
+          three:           ["three"],
+          r3f:             ["@react-three/fiber", "@react-three/drei"],
+          postprocessing:  ["@react-three/postprocessing", "postprocessing"],
+          react:           ["react", "react-dom"],
+          lenis:           ["lenis"],
+          zustand:         ["zustand"],
         },
       },
     },
+    chunkSizeWarningLimit: 1000,
   },
   assetsInclude: ["**/*.glb", "**/*.hdr"],
   server: { port: 5173 },
