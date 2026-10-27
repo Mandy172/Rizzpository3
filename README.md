@@ -42,6 +42,20 @@ Boot the ECU. Watch the RPM sweep. Keep scrolling.
 
 ---
 
+## Folder Ownership
+
+| Folder / Path | Owner | Responsibility |
+|---------------|-------|----------------|
+| `src/three/`  | **Sujay** | 3D scene, Canvas, lighting, camera, model animation |
+| `src/store/`  | **Manas** | State management, scroll store, reactive properties |
+| `src/sections/` | **Manas** | Scroll container, layout sections, transitions |
+| `src/styles/` | **Manas** | Tailwind, CSS tokens, global layout styles |
+| `src/hud/`    | **Kritagya** | Heads-up display, preloader, tachometer, telemetry |
+| `src/data/`   | **Kritagya** | Technical specs, part data, verified benchmarks |
+
+
+---
+
 ## Getting Started
 
 ```bash

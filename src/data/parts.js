@@ -154,3 +154,6 @@ export const PARTS = [
 
 /** Ordered array of part IDs for index lookups */
 export const PART_IDS = PARTS.map((p) => p.id);
+export const parts = PARTS;
+export default PARTS;
+
