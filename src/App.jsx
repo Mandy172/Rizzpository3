@@ -4,6 +4,7 @@ import { ThreeCanvas } from './three/ThreeCanvas.jsx';
 import { HUDOverlay } from './hud/HUDOverlay.jsx';
 import { ScrollContainer } from './sections/ScrollContainer.jsx';
 import { Preloader, Cursor, PartNavigator } from './hud';
+import EngineAudio from './audio/EngineAudio.jsx';
 
 class CanvasErrorBoundary extends Component {
   constructor(props) {
@@ -39,6 +40,7 @@ export default function App() {
 
       {/* Boot sequence preloader with 13k RPM arc sweep */}
       <Preloader />
+      <EngineAudio />
 
       {/* 4. Fixed full-screen Three.js Canvas behind the DOM (z-index 0) */}
       <CanvasErrorBoundary>
