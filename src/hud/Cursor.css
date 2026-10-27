@@ -1,0 +1,75 @@
+/* Cursor.css */
+* { cursor: none !important; }
+
+.cursor__dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 6px; height: 6px;
+  background: #d4ff00;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+}
+.cursor__dot::before,
+.cursor__dot::after {
+  content: '';
+  position: absolute;
+  background: #d4ff00;
+}
+/* Crosshair arms */
+.cursor__dot::before {
+  width: 12px; height: 1px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.cursor__dot::after {
+  width: 1px; height: 12px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cursor__dot--text {
+  mix-blend-mode: difference;
+}
+
+/* ── Ring ─────────────────────────────────────────────────── */
+.cursor__ring {
+  position: fixed;
+  top: 0; left: 0;
+  width: 32px; height: 32px;
+  border: 1px solid rgba(212, 255, 0, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9997;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              height 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 0.35s;
+}
+.cursor__ring--expanded {
+  width: 80px;
+  height: 80px;
+  border-color: rgba(255, 34, 0, 0.7);
+}
+.cursor__ring--text {
+  mix-blend-mode: difference;
+}
+.cursor__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.12em;
+  color: #ff2200;
+  white-space: nowrap;
+  text-align: center;
+  padding: 0 4px;
+}
+
+/* ── Mobile: restore normal cursor ───────────────────────── */
+@media (hover: none), (pointer: coarse) {
+  * { cursor: auto !important; }
+  .cursor__dot, .cursor__ring { display: none; }
+}
