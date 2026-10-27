@@ -5,12 +5,12 @@
  * - Touch devices: disabled
  */
 import { useEffect, useRef, useState } from "react";
-import { useStore } from "../store/useStore.js";
+import { useScrollStore } from "../store/scroll.js";
 import "./Cursor.css";
 
 export default function Cursor() {
-  const isTouch     = useStore((s) => s.isTouch);
-  const hoveredPart = useStore((s) => s.hoveredPart);
+  const isTouch     = useScrollStore((s) => s.isTouch);
+  const hoveredPart = useScrollStore((s) => s.hoveredPart);
 
   const cursorRef = useRef(null);
   const ringRef   = useRef(null);

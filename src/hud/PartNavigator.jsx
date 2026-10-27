@@ -5,25 +5,28 @@
  * Hover shows pitch preview
  * Click scrolls to that part via Lenis
  */
-import { useStore } from "../store/useStore.js";
+import { useScrollStore } from "../store/scroll.js";
 import { PARTS } from "../data/parts.js";
 import "./PartNavigator.css";
 
 export default function PartNavigator({ lenisRef }) {
-  const activePart = useStore((s) => s.activePart);
+  const activePartId = useScrollStore((s) => s.activePartId);
+  const activePart = useScrollStore((s) => s.activePart);
 
   const scrollTo = (index) => {
-    if (!lenisRef?.current) return;
-    // Each part section occupies (1/10) of total scrollable height
-    const totalHeight = document.body.scrollHeight - window.innerHeight;
-    const target = (index / 10) * totalHeight;
-    lenisRef.current.scrollTo(target, { duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 3) });
+    const lenis = window.__lenis || lenisRef?.current;
+    if (lenis) {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      // 12 segments total: segment 0 = Hero, segment 1..10 = parts 0..9
+      const target = ((index + 1) / 12) * totalScroll;
+      lenis.scrollTo(target, { duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 3) });
+    }
   };
 
   return (
     <nav className="part-nav" aria-label="Part navigator">
       {PARTS.map((part, i) => {
-        const isActive = i === activePart;
+        const isActive = part.id === activePartId || i === activePart;
         return (
           <button
             key={part.id}

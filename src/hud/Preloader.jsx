@@ -6,7 +6,7 @@
  *   3. Hard wipe → reveal when modelReady
  */
 import { useEffect, useRef, useState } from "react";
-import { useStore } from "../store/useStore.js";
+import { useScrollStore } from "../store/scroll.js";
 import "./Preloader.css";
 
 const BOOT_LINES = [
@@ -42,9 +42,9 @@ function arcPath(cx, cy, r, startDeg, endDeg) {
 }
 
 export default function Preloader() {
-  const modelReady = useStore((s) => s.modelReady);
-  const muted = useStore((s) => s.muted);
-  const toggleMuted = useStore((s) => s.toggleMuted);
+  const modelReady = useScrollStore((s) => s.modelReady);
+  const muted = useScrollStore((s) => s.muted);
+  const toggleMuted = useScrollStore((s) => s.toggleMuted);
 
   const [lines, setLines] = useState([]);
   const [rpm, setRpm] = useState(0);
@@ -92,7 +92,14 @@ export default function Preloader() {
     }
   }, [muted]);
 
-  // Wipe when model ready
+  // Wipe when model ready, with fallback if model takes > 3.8s
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      useScrollStore.getState().setModelReady(true);
+    }, 3800);
+    return () => clearTimeout(fallbackTimer);
+  }, []);
+
   useEffect(() => {
     if (modelReady) {
       setWiping(true);
