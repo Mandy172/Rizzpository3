@@ -23,7 +23,18 @@ export const useStore = create((set, get) => ({
   // ── Active Part ───────────────────────────────────────────────────────────
   /** 0-based index of the currently visible part */
   activePart: 0,
-  setActivePart: (i) => set({ activePart: i }),
+  activePartId: PART_IDS[0] || "engine",
+  activePartScreenPos: { x: 0, y: 0 },
+  scrollStage: 0,
+
+  setActivePart: (i) => set({
+    activePart: i,
+    activePartId: PART_IDS[i] || null,
+    scrollStage: i,
+  }),
+  setActivePartId: (id) => set({ activePartId: id }),
+  setActivePartScreenPos: (pos) => set({ activePartScreenPos: pos }),
+  setScrollStage: (stage) => set({ scrollStage: stage }),
 
   // ── Hovered Part (3D scene) ───────────────────────────────────────────────
   hoveredPart: null,

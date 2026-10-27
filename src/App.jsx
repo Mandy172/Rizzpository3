@@ -1,8 +1,8 @@
 /**
  * App.jsx — Root component
- * Owns: Lenis smooth scroll wired to GSAP ScrollTrigger, store wiring, 3D Canvas
+ * Owns: Lenis smooth scroll wired to GSAP ScrollTrigger, store wiring, 3D Canvas, and Brutalist Sections
  */
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,7 +10,17 @@ import { useStore } from "./store/useStore.js";
 import { useScrollStore } from "./store/scroll.js";
 import { Preloader, HUD, PartNavigator, Cursor } from "./hud/index.js";
 import { PARTS } from "./data/parts.js";
-import SceneCanvas from "./three/SceneCanvas.jsx";
+
+// Tech-brutalist overlays
+import Frame from "./sections/Frame.jsx";
+import Hero from "./sections/Hero.jsx";
+import InfoPanel from "./sections/InfoPanel.jsx";
+import StatSection from "./sections/StatSection.jsx";
+import Marquee from "./sections/Marquee.jsx";
+import Finale from "./sections/Finale.jsx";
+
+// 3D Scene (Sujay/Manas)
+const Scene = lazy(() => import("./components/Scene.jsx"));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -105,8 +115,18 @@ export default function App() {
       <HUD />
       <PartNavigator lenisRef={lenisRef} />
 
-      {/* Fixed full-screen Canvas behind DOM */}
-      <SceneCanvas onReady={handleModelReady} />
+      {/* 3D Scene fixed behind DOM */}
+      <Suspense fallback={null}>
+        <Scene onReady={handleModelReady} />
+      </Suspense>
+
+      {/* Tech-Brutalist Product Overlays */}
+      <Frame />
+      <Hero />
+      <InfoPanel />
+      <StatSection />
+      <Marquee />
+      <Finale />
 
       {/* Scrollable container of (parts.length + 2) * 100vh */}
       <main
@@ -117,22 +137,7 @@ export default function App() {
         }}
       >
         {PARTS.map((part) => (
-          <section key={part.id} id={part.id} className="part-section">
-            <div className="part-section__info" style={{ pointerEvents: "auto" }}>
-              <div className="part-section__index">[{part.index}]</div>
-              <h2 className="part-section__name">{part.name}</h2>
-              <p className="part-section__pitch">{part.pitch}</p>
-              <ul className="part-section__specs">
-                {part.specs.map(([label, val]) => (
-                  <li key={label}>
-                    <span className="spec-label">{label}</span>
-                    <span className="spec-value">{val}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="part-section__why">{part.why}</p>
-            </div>
-          </section>
+          <section key={part.id} id={part.id} className="part-section" />
         ))}
       </main>
     </>

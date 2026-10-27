@@ -1,0 +1,84 @@
+/* ─── STAT SECTION ───────────────────────────────────────────── */
+/* Positioned LEFT of bike center — never covers the 3D canvas center */
+.stat-section {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 38%;
+  transform: translateY(-50%);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: clamp(32px, 4vw, 64px);
+  pointer-events: none;
+}
+
+.stat-section__inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3.5vw, 48px);
+  align-items: flex-start;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.stat-item__value {
+  font-family: var(--display);
+  font-size: clamp(40px, 5.5vw, 88px);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.stat-item__label {
+  font-family: var(--mono);
+  font-size: clamp(8px, 0.75vw, 10px);
+  letter-spacing: 0.3em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-top: 8px;
+  border-top: 1px solid var(--red);
+  padding-top: 6px;
+  width: 100%;
+}
+
+/* Responsive: stack on tablet */
+@media (max-width: 1023px) {
+  .stat-section {
+    width: 50%;
+  }
+  .stat-item__value {
+    font-size: clamp(32px, 6vw, 64px);
+  }
+}
+
+/* Mobile: full-width bottom strip, horizontal */
+@media (max-width: 767px) {
+  .stat-section {
+    position: fixed;
+    top: auto;
+    bottom: 80px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: none;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .stat-section__inner {
+    flex-direction: row;
+    gap: 16px;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 100%;
+  }
+  .stat-item__value {
+    font-size: clamp(24px, 7vw, 40px);
+  }
+}
