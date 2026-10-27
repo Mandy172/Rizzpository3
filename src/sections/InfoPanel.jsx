@@ -70,13 +70,13 @@ export default function InfoPanel() {
         <div className="panel__body">
           <div className="panel__tag">PART [{pad(shown + 1)}/{pad(PARTS.length)}]</div>
           <h2 className="panel__name">{part.name}</h2>
-          <p className="panel__pitch">{part.pitch}</p>
+          {part.pitch && <p className="panel__pitch">{part.pitch}</p>}
           <dl className="specs">
             {part.specs.map(([k, v], i) => (
               <div className="spec" key={`${shown}-${i}`}><dt>{k}</dt><i className="lead" /><dd data-text={v} /></div>
             ))}
           </dl>
-          <div className="why"><b>WHY IT MATTERS</b><p>{part.why}</p></div>
+          {part.why && <div className="why"><b>WHY IT MATTERS</b><p>{part.why}</p></div>}
         </div>
       </aside>
     </>

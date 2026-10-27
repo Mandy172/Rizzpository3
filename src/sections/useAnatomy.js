@@ -12,17 +12,29 @@ export const STAGES = {
   finale: [0.95, 1.01],
 };
 
+const cleanCopy = (value) => {
+  if (typeof value !== 'string') return value ?? '';
+  const text = value.trim();
+  return text.toUpperCase() === 'TODO' ? '' : text;
+};
+
 const norm = (p, i) => {
   const raw = p.specs ?? p.specifications ?? [];
   const specs = Array.isArray(raw)
-    ? raw.map((s) => (Array.isArray(s) ? s : typeof s === 'string' ? ['', s] : [s.label ?? s.name ?? s.key, s.value ?? s.val]))
+    ? raw.map((s, index) => (
+      Array.isArray(s)
+        ? s
+        : typeof s === 'string'
+          ? [`SPEC ${String(index + 1).padStart(2, '0')}`, s]
+          : [s.label ?? s.name ?? s.key, s.value ?? s.val]
+    ))
     : Object.entries(raw);
   return {
     id: p.id ?? i,
     name: p.name ?? p.title ?? '',
-    pitch: p.pitch ?? p.tagline ?? p.description ?? '',
+    pitch: cleanCopy(p.pitch ?? p.tagline ?? p.description),
     specs: specs.map(([k, v]) => [String(k), String(v)]),
-    why: p.why ?? p.whyItMatters ?? p.why_it_matters ?? '',
+    why: cleanCopy(p.why ?? p.whyItMatters ?? p.why_it_matters),
   };
 };
 export const PARTS = (partsMod.default ?? partsMod.parts ?? partsMod.PARTS ?? []).map(norm);

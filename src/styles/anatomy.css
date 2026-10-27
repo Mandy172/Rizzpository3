@@ -109,3 +109,189 @@ font:700 clamp(12px,1.1vw,15px)/1 var(--mono);letter-spacing:.22em;text-decorati
   .xh--bl,.xh--br{display:none}
 }
 @media (prefers-reduced-motion:reduce){.mq__track,.arrow{animation:none}}
+
+/* Keep the new section system as the single source of component detail. */
+.ov + div > aside,
+.ov + div > svg,
+.ov + div > footer {
+  display: none !important;
+}
+
+.ov + div > header {
+  position: absolute !important;
+  top: calc(var(--bar) + 10px);
+  right: var(--gut);
+  width: auto;
+  padding: 0 !important;
+  border: 0 !important;
+  pointer-events: none !important;
+}
+
+.ov + div > header > div:first-child,
+.ov + div > header > div:last-child > div {
+  display: none !important;
+}
+
+.ov + div > header > div:last-child {
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.ov + div > header button {
+  min-height: 32px;
+  border: 1px solid var(--line) !important;
+  background: rgba(10, 10, 10, .94) !important;
+  color: var(--text) !important;
+  padding: 7px 10px !important;
+  font: 700 10px/1 var(--mono) !important;
+  letter-spacing: .08em;
+}
+
+.ov + div > header button:hover {
+  border-color: var(--red) !important;
+}
+
+.ov + div > div.fixed.left-8.bottom-28 {
+  position: absolute !important;
+  left: var(--gut) !important;
+  bottom: calc(var(--gut) + 36px) !important;
+  background: rgba(10, 10, 10, .94) !important;
+  border-color: var(--red) !important;
+  color: var(--text);
+}
+
+.panel {
+  top: clamp(88px, calc(var(--bar) + 6vh), 150px);
+  width: clamp(320px, 30vw, 460px);
+  max-height: min(68svh, calc(100svh - var(--bar) - 24px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--red) var(--surface);
+  background: rgba(10, 10, 10, .94);
+}
+
+.panel__body {
+  padding: clamp(16px, 2vw, 28px);
+}
+
+.panel__name {
+  font-size: clamp(32px, 5.1vh, 60px);
+  line-height: .94;
+  overflow-wrap: anywhere;
+}
+
+.panel__ghost {
+  top: -.04em;
+  right: .12em;
+  font-size: 11em;
+  -webkit-text-stroke-color: rgba(225, 6, 0, .24);
+}
+
+.specs {
+  display: grid;
+  gap: 2px;
+}
+
+.spec {
+  display: grid;
+  grid-template-columns: minmax(5.2em, .8fr) minmax(10px, .18fr) minmax(0, 1.5fr);
+  align-items: baseline;
+  gap: .55em;
+  min-height: 2.1em;
+  line-height: 1.45;
+  padding: .35em 0;
+  border-bottom: 1px solid rgba(242, 242, 240, .1);
+}
+
+.spec dt {
+  white-space: normal;
+  font-size: .76em;
+}
+
+.spec .lead {
+  min-width: 8px;
+}
+
+.spec dd {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+@media (max-width: 1100px) {
+  .panel {
+    width: clamp(300px, 35vw, 400px);
+    max-height: min(68svh, calc(100svh - var(--bar) - 24px));
+  }
+
+  .panel__name {
+    font-size: clamp(30px, 5vh, 54px);
+  }
+}
+
+@media (max-width: 720px) {
+  .ov + div > header {
+    top: calc(var(--bar) + 10px);
+    right: var(--gut);
+  }
+
+  .ov + div > header > div:last-child {
+    gap: 5px;
+  }
+
+  .ov + div > header button {
+    min-height: 28px;
+    padding: 6px 7px !important;
+    font-size: 9px !important;
+  }
+
+  .ov + div > div.fixed.left-8.bottom-28 {
+    display: none !important;
+  }
+
+  .panel {
+    top: auto;
+    bottom: 0;
+    left: 0 !important;
+    right: 0 !important;
+    width: auto;
+    max-height: min(44svh, 420px);
+    overflow-y: auto;
+    border-width: 1px 0 0;
+  }
+
+  .panel__body {
+    padding: 4px 18px 18px;
+  }
+
+  .panel__name {
+    font-size: clamp(28px, 4.2svh, 40px);
+  }
+
+  .panel__ghost {
+    font-size: 8em;
+  }
+
+  .spec {
+    grid-template-columns: minmax(4.6em, .75fr) minmax(8px, .15fr) minmax(0, 1.5fr);
+    font-size: .95em;
+  }
+
+  .stats,
+  .mq {
+    top: calc(var(--bar) + 62px);
+  }
+}
+
+@media (max-height: 700px) and (min-width: 721px) {
+  .panel {
+    top: calc(var(--bar) + 14px);
+    max-height: calc(100svh - var(--bar) - 28px);
+  }
+
+  .panel__name {
+    font-size: clamp(28px, 5vh, 48px);
+  }
+}
