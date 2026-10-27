@@ -1,59 +1,37 @@
 import { useEffect } from 'react';
 import { useScrollStore } from '../store/scroll.js';
 
-const REFERENCE_RPM = 3000;
-const MAX_SCROLL_VELOCITY = 4;
+const SAMPLE_URL = '/audio/motorcycle-engine.mp3';
+const MAX_SCROLL_VELOCITY = 3.2;
+const CROSSFADE_SECONDS = 0.12;
 
-// Aprilia's 65° V4 has an uneven 720° combustion sequence. These pulse angles
-// make the loop throb like that engine instead of sounding like a flat sine tone.
-const FIRING_ANGLES = [0, 180, 425, 605];
+function makeLoopBuffer(context, source) {
+  const channels = source.numberOfChannels;
+  const crossfadeFrames = Math.min(
+    Math.round(context.sampleRate * CROSSFADE_SECONDS),
+    Math.floor(source.length / 4),
+  );
+  const outputLength = source.length - crossfadeFrames;
+  const loop = context.createBuffer(channels, outputLength, context.sampleRate);
+  const bodyLength = source.length - crossfadeFrames * 2;
 
-function makeFiringLoop(context) {
-  const cycleSeconds = 120 / REFERENCE_RPM;
-  const frameCount = Math.round(context.sampleRate * cycleSeconds);
-  const buffer = context.createBuffer(1, frameCount, context.sampleRate);
-  const samples = buffer.getChannelData(0);
-  const pulseAngles = FIRING_ANGLES.map((angle) => angle / 720);
-  let peak = 0;
+  for (let channel = 0; channel < channels; channel += 1) {
+    const input = source.getChannelData(channel);
+    const output = loop.getChannelData(channel);
 
-  for (let i = 0; i < frameCount; i += 1) {
-    const phase = i / frameCount;
-    let sample = 0;
-
-    for (const pulse of pulseAngles) {
-      const age = ((phase - pulse + 1) % 1) * cycleSeconds;
-      if (age > 0.024) continue;
-
-      const envelope = Math.exp(-age / 0.0065);
-      sample += envelope * (
-        0.62 * Math.sin(2 * Math.PI * 82 * age)
-        + 0.3 * Math.sin(2 * Math.PI * 190 * age)
-        + 0.2 * Math.sin(2 * Math.PI * 620 * age)
-        + 0.1 * Math.sin(2 * Math.PI * 1320 * age)
-      );
+    for (let i = 0; i < bodyLength; i += 1) {
+      output[i] = input[i + crossfadeFrames];
     }
 
-    samples[i] = sample;
-    peak = Math.max(peak, Math.abs(sample));
+    for (let i = 0; i < crossfadeFrames; i += 1) {
+      const mix = i / crossfadeFrames;
+      const tail = input[source.length - crossfadeFrames + i];
+      const head = input[i];
+      output[bodyLength + i] = tail * Math.cos(mix * Math.PI / 2) + head * Math.sin(mix * Math.PI / 2);
+    }
   }
 
-  const scale = peak > 0 ? 0.8 / peak : 1;
-  for (let i = 0; i < frameCount; i += 1) samples[i] *= scale;
-  return buffer;
-}
-
-function makeIntakeNoise(context) {
-  const frameCount = context.sampleRate * 2;
-  const buffer = context.createBuffer(1, frameCount, context.sampleRate);
-  const samples = buffer.getChannelData(0);
-  const fadeFrames = Math.round(context.sampleRate * 0.04);
-
-  for (let i = 0; i < frameCount; i += 1) {
-    const edge = Math.min(1, i / fadeFrames, (frameCount - 1 - i) / fadeFrames);
-    samples[i] = (Math.random() * 2 - 1) * Math.max(0, edge) * 0.35;
-  }
-
-  return buffer;
+  return loop;
 }
 
 function smoothParam(param, value, now, timeConstant) {
@@ -65,93 +43,98 @@ function smoothParam(param, value, now, timeConstant) {
   param.setTargetAtTime(value, now, timeConstant);
 }
 
-function createEngine(context) {
+function createEngine(context, recording) {
   const compressor = context.createDynamicsCompressor();
-  compressor.threshold.value = -20;
-  compressor.knee.value = 16;
-  compressor.ratio.value = 4;
-  compressor.attack.value = 0.004;
-  compressor.release.value = 0.16;
+  compressor.threshold.value = -18;
+  compressor.knee.value = 18;
+  compressor.ratio.value = 3;
+  compressor.attack.value = 0.006;
+  compressor.release.value = 0.2;
 
   const master = context.createGain();
   master.gain.value = 0;
   compressor.connect(master);
   master.connect(context.destination);
 
-  const exhaustFilter = context.createBiquadFilter();
-  exhaustFilter.type = 'lowpass';
-  exhaustFilter.frequency.value = 1500;
-  exhaustFilter.Q.value = 0.65;
+  const highPass = context.createBiquadFilter();
+  highPass.type = 'highpass';
+  highPass.frequency.value = 65;
+  highPass.Q.value = 0.7;
 
-  const exhaustGain = context.createGain();
-  exhaustGain.gain.value = 0.74;
-  exhaustFilter.connect(exhaustGain);
-  exhaustGain.connect(compressor);
+  const lowPass = context.createBiquadFilter();
+  lowPass.type = 'lowpass';
+  lowPass.frequency.value = 5200;
+  lowPass.Q.value = 0.55;
+  highPass.connect(lowPass);
+  lowPass.connect(compressor);
 
-  const firing = context.createBufferSource();
-  firing.buffer = makeFiringLoop(context);
-  firing.loop = true;
-  firing.playbackRate.value = 0.5;
-  firing.connect(exhaustFilter);
-  firing.start();
+  const source = context.createBufferSource();
+  source.buffer = makeLoopBuffer(context, recording);
+  source.loop = true;
+  source.playbackRate.value = 0.74;
+  source.connect(highPass);
+  source.start();
 
-  const intakeFilter = context.createBiquadFilter();
-  intakeFilter.type = 'bandpass';
-  intakeFilter.frequency.value = 900;
-  intakeFilter.Q.value = 0.55;
-
-  const intakeGain = context.createGain();
-  intakeGain.gain.value = 0.16;
-  intakeFilter.connect(intakeGain);
-  intakeGain.connect(compressor);
-
-  const intake = context.createBufferSource();
-  intake.buffer = makeIntakeNoise(context);
-  intake.loop = true;
-  intake.connect(intakeFilter);
-  intake.start();
-
-  return { context, master, firing, exhaustFilter, intakeFilter };
+  return { context, master, source, lowPass };
 }
 
 function tuneEngine(engine, state) {
-  const { context } = engine;
-  const now = context.currentTime;
+  const now = engine.context.currentTime;
   const velocity = Math.min(Math.abs(state.scrollVelocity) / MAX_SCROLL_VELOCITY, 1);
-  const rpm = 1450 + Math.pow(velocity, 1.18) * 11550;
-  const targetVolume = state.muted ? 0 : 0.018 + Math.pow(velocity, 1.45) * 0.2;
+  const active = velocity > 0.008 && !state.muted;
+  const playbackRate = 0.74 + velocity * 0.68;
+  const volume = active ? 0.04 + Math.pow(velocity, 0.95) * 0.58 : 0;
 
-  smoothParam(engine.firing.playbackRate, rpm / REFERENCE_RPM, now, 0.09);
-  smoothParam(engine.exhaustFilter.frequency, 1250 + velocity * 4100, now, 0.12);
-  smoothParam(engine.intakeFilter.frequency, 750 + velocity * 2600, now, 0.12);
-  smoothParam(engine.master.gain, targetVolume, now, 0.1);
+  smoothParam(engine.source.playbackRate, playbackRate, now, 0.14);
+  smoothParam(engine.lowPass.frequency, 4200 + velocity * 5200, now, 0.16);
+  smoothParam(engine.master.gain, volume, now, 0.13);
 }
 
 export default function EngineAudio() {
   useEffect(() => {
+    let context = null;
     let engine = null;
-    let audioContext = null;
+    let loading = null;
+    let idleTimer = null;
+    let disposed = false;
+
+    const recordingRequest = fetch(SAMPLE_URL)
+      .then((response) => {
+        if (!response.ok) throw new Error('Motorcycle audio could not be loaded');
+        return response.arrayBuffer();
+      })
+      .catch(() => null);
 
     const startEngine = () => {
       const state = useScrollStore.getState();
       if (state.muted) return;
 
       try {
-        if (!audioContext) {
+        if (!context) {
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
           if (!AudioContextClass) return;
-          const context = new AudioContextClass();
-          try {
-            engine = createEngine(context);
-            audioContext = context;
-          } catch (error) {
-            context.close();
-            throw error;
-          }
+          context = new AudioContextClass();
         }
 
-        if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
-        tuneEngine(engine, state);
+        if (context.state === 'suspended') context.resume().catch(() => {});
+
+        if (!engine && !loading) {
+          loading = recordingRequest
+            .then((data) => {
+              if (!data) return null;
+              return context.decodeAudioData(data.slice(0));
+            })
+            .then((recording) => {
+              if (!recording || disposed || !context || context.state === 'closed') return;
+              engine = createEngine(context, recording);
+              tuneEngine(engine, useScrollStore.getState());
+            })
+            .catch(() => {
+              loading = null;
+            });
+        }
+
+        if (engine) tuneEngine(engine, state);
       } catch {
         // Unsupported audio devices should not interrupt the visual experience.
       }
@@ -167,12 +150,20 @@ export default function EngineAudio() {
     const unsubscribe = useScrollStore.subscribe((state, previous) => {
       if (state.muted !== previous.muted) {
         if (state.muted) {
+          clearTimeout(idleTimer);
           if (engine) tuneEngine(engine, state);
         } else {
           startEngine();
         }
-      } else if (engine && state.scrollVelocity !== previous.scrollVelocity) {
-        tuneEngine(engine, state);
+      } else if (state.scrollVelocity !== previous.scrollVelocity) {
+        clearTimeout(idleTimer);
+        if (engine) tuneEngine(engine, state);
+
+        if (Math.abs(state.scrollVelocity) > 0.008) {
+          idleTimer = setTimeout(() => {
+            if (engine) tuneEngine(engine, { ...useScrollStore.getState(), scrollVelocity: 0 });
+          }, 240);
+        }
       }
     });
 
@@ -182,12 +173,14 @@ export default function EngineAudio() {
     window.addEventListener('click', onScrollGesture, true);
 
     return () => {
+      disposed = true;
+      clearTimeout(idleTimer);
       unsubscribe();
       window.removeEventListener('wheel', onScrollGesture, true);
       window.removeEventListener('touchstart', onScrollGesture, true);
       window.removeEventListener('keydown', onKeyDown, true);
       window.removeEventListener('click', onScrollGesture, true);
-      if (audioContext && audioContext.state !== 'closed') audioContext.close();
+      if (context && context.state !== 'closed') context.close();
     };
   }, []);
 
