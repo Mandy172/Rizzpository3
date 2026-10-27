@@ -121,7 +121,7 @@ export default function Preloader() {
   return (
     <div className={`preloader ${wiping ? "preloader--wipe" : ""}`}>
       {/* Audio element — /public/engine-start.mp3 */}
-      <audio ref={audioRef} src="/engine-start.mp3" preload="auto" />
+      <audio ref={audioRef} src="/engine-start.wav" preload="auto" />
 
       {/* Mute toggle */}
       <button className="preloader__mute" onClick={toggleMuted} aria-label="Toggle sound">
