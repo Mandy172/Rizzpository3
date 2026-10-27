@@ -7,6 +7,7 @@ import { useEffect, useRef, useCallback } from "react";
 import Lenis from "lenis";
 import { useStore } from "./store/useStore.js";
 import { Preloader, HUD, PartNavigator, Cursor } from "./hud/index.js";
+import Sections from "./sections";
 import { PARTS } from "./data/parts.js";
 
 // Lazy-load the 3D scene (Sujay/Manas own this)
@@ -82,6 +83,8 @@ export default function App() {
       <Preloader />
       <HUD />
       <PartNavigator lenisRef={lenisRef} />
+
+      <Sections />
 
       {/* 3D Scene — lazy-loaded; Scene calls onReady() when model is loaded */}
       <Suspense fallback={null}>
