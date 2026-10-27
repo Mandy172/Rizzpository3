@@ -1,157 +1,84 @@
-import { useEffect, useRef, useCallback } from 'react'
-import { useStore } from '../store.js'
-import { parts } from '../data/parts.js'
-import '../styles/infopanel.css'
-
-function LeaderLine({ panelRef }) {
-  const svgRef     = useRef(null)
-  const pathRef    = useRef(null)
-  const dotRef     = useRef(null)
-  const rafRef     = useRef(null)
-  const screenPos  = useStore((s) => s.activePartScreenPos)
-  const activeId   = useStore((s) => s.activePartId)
-
-  const draw = useCallback(() => {
-    if (!svgRef.current || !pathRef.current || !panelRef.current || !activeId) return
-
-    const svg  = svgRef.current
-    const rect = panelRef.current.getBoundingClientRect()
-
-    // Panel anchor: right-middle or left-middle depending on side
-    const isRight = panelRef.current.classList.contains('info-panel--right')
-    const panelX  = isRight ? rect.left : rect.right
-    const panelY  = rect.top + rect.height / 2
-
-    const bikeX = screenPos.x
-    const bikeY = screenPos.y
-
-    const midX = (panelX + bikeX) / 2
-
-    pathRef.current.setAttribute('d', `M${panelX},${panelY} C${midX},${panelY} ${midX},${bikeY} ${bikeX},${bikeY}`)
-    dotRef.current.setAttribute('cx', bikeX)
-    dotRef.current.setAttribute('cy', bikeY)
-
-    rafRef.current = requestAnimationFrame(draw)
-  }, [screenPos, activeId, panelRef])
-
-  useEffect(() => {
-    rafRef.current = requestAnimationFrame(draw)
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [draw])
-
-  return (
-    <svg ref={svgRef} className="leader-line-svg" aria-hidden="true">
-      <path
-        ref={pathRef}
-        fill="none"
-        stroke="#FF1E1E"
-        strokeWidth="1"
-        strokeDasharray="4 3"
-      />
-      <rect
-        ref={dotRef}
-        x={0} y={0}
-        width="6" height="6"
-        fill="#FF1E1E"
-        transform="translate(-3,-3)"
-      />
-    </svg>
-  )
-}
+import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { useStore, useActiveIndex, PARTS, pad, toPx } from './useAnatomy.js';
 
 export default function InfoPanel() {
-  const activeId  = useStore((s) => s.activePartId)
-  const panelRef  = useRef(null)
-  const prevIdRef = useRef(null)
+  const idx = useActiveIndex();
+  const [shown, setShown] = useState(Math.max(idx, 0));
+  const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const panel = useRef(null), path = useRef(null), node = useRef(null), drag = useRef(0);
 
-  const part  = parts.find((p) => p.id === activeId)
-  const index = part ? parseInt(part.index, 10) : 0
-  const isRight = index % 2 === 0
-
-  // Clip-path wipe animation
-  const animateIn = useCallback(() => {
-    const el = panelRef.current
-    if (!el) return
-    el.style.transition = 'none'
-    el.style.clipPath    = 'inset(0 100% 0 0)'
-    // Force reflow
-    void el.offsetWidth
-    el.style.transition = 'clip-path 0.55s cubic-bezier(0.76,0,0.24,1)'
-    el.style.clipPath    = 'inset(0 0% 0 0)'
-  }, [])
-
-  const animateOut = useCallback((cb) => {
-    const el = panelRef.current
-    if (!el) { cb(); return }
-    el.style.transition = 'clip-path 0.3s cubic-bezier(0.76,0,0.24,1)'
-    el.style.clipPath    = 'inset(0 0 0 100%)'
-    setTimeout(cb, 320)
-  }, [])
-
+  // wipe out -> swap -> wipe in
   useEffect(() => {
-    if (activeId === prevIdRef.current) return
-
-    if (prevIdRef.current && activeId) {
-      animateOut(() => {
-        prevIdRef.current = activeId
-        animateIn()
-      })
-    } else if (activeId) {
-      prevIdRef.current = activeId
-      animateIn()
-    } else {
-      animateOut(() => { prevIdRef.current = null })
+    if (idx < 0) { setOpen(false); return; }
+    if (!open) { setShown(idx); const r = requestAnimationFrame(() => setOpen(true)); return () => cancelAnimationFrame(r); }
+    if (idx !== shown) {
+      setOpen(false);
+      const t = setTimeout(() => { setShown(idx); setOpen(true); }, 520);
+      return () => clearTimeout(t);
     }
-  }, [activeId, animateIn, animateOut])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx]);
 
-  if (!part) return null
+  // typewriter on spec values
+  useEffect(() => {
+    if (!open || !panel.current) return;
+    const tws = [...panel.current.querySelectorAll('.spec dd')].map((el, i) => {
+      const t = el.dataset.text, o = { n: 0 };
+      return gsap.to(o, {
+        n: t.length, duration: Math.min(0.9, t.length * 0.04), delay: 0.4 + i * 0.08, ease: 'none',
+        onUpdate: () => { el.textContent = t.slice(0, Math.round(o.n)) + (o.n < t.length ? '█' : ''); },
+        onComplete: () => { el.textContent = t; },
+      });
+    });
+    return () => tws.forEach((t) => t.kill());
+  }, [shown, open]);
 
-  const sideClass = isRight ? 'info-panel--right' : 'info-panel--left'
+  // leader line, every frame
+  useEffect(() => {
+    let raf;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const p = toPx(useStore.getState().activePartScreenPos), el = panel.current, d = path.current, n = node.current;
+      if (!p || !el || !open || !d) { if (d) d.style.visibility = n.style.visibility = 'hidden'; return; }
+      const r = el.getBoundingClientRect(), mobile = innerWidth <= 720, left = shown % 2 === 0;
+      const sx = mobile ? r.left + r.width / 2 : left ? r.right : r.left, sy = mobile ? r.top : r.top + 64;
+      const bx = mobile ? sx : p.x + (left ? -48 : 48);
+      d.setAttribute('d', mobile ? `M${sx} ${sy} V${p.y}  H${p.x}` : `M${sx} ${sy} H${bx} L${p.x} ${p.y}`);
+      n.setAttribute('x', p.x - 4); n.setAttribute('y', p.y - 4);
+      d.style.visibility = n.style.visibility = 'visible';
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, [open, shown]);
+
+  const part = PARTS[shown];
+  if (!part) return null;
+  const side = shown % 2 === 0 ? 'l' : 'r';
 
   return (
     <>
-      <LeaderLine panelRef={panelRef} />
-      <div ref={panelRef} className={`info-panel ${sideClass}`} role="complementary" aria-label={part.name}>
-        <div className="info-panel__card">
-          {/* Ghost index */}
-          <span className="info-panel__ghost-index" aria-hidden="true">[{part.index}]</span>
-
-          {/* Tag */}
-          <div className="info-panel__tag">
-            <span className="index-tag">[{part.index}/10]</span>
-          </div>
-
-          {/* Name */}
-          <h2 className="info-panel__name">{part.name}</h2>
-
-          {/* Pitch */}
-          <p className="info-panel__pitch">{part.pitch}</p>
-
-          {/* Hazard divider */}
-          <div className="hazard-stripe" style={{ margin: '0 -24px 16px', width: 'calc(100% + 48px)' }} />
-
-          {/* Specs table */}
-          <table className="info-panel__specs" aria-label="Specifications">
-            <tbody>
-              {part.specs.map(([label, value]) => (
-                <tr key={label}>
-                  <td>{label}</td>
-                  <td>{value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* WHY strip */}
-          <div className="info-panel__why">
-            <div className="info-panel__why-label">WHY IT MATTERS</div>
-            <p className="info-panel__why-text">{part.whyItMatters}</p>
-          </div>
-
-          {/* Mobile drag handle */}
-          <div className="drag-handle" aria-hidden="true" />
+      <svg className="leader" aria-hidden="true"><path ref={path} /><rect ref={node} width="8" height="8" /></svg>
+      <aside ref={panel} className={`panel panel--${side} ${open ? 'is-in' : ''} ${collapsed ? 'is-min' : ''}`}>
+        <div
+          className="panel__handle"
+          onPointerDown={(e) => { drag.current = e.clientY; e.currentTarget.setPointerCapture(e.pointerId); }}
+          onPointerUp={(e) => { const d = e.clientY - drag.current; setCollapsed(d > 24 ? true : d < -24 ? false : !collapsed); }}
+        ><i /></div>
+        <span className="panel__ghost" aria-hidden="true">[{pad(shown + 1)}]</span>
+        <div className="panel__body">
+          <div className="panel__tag">PART [{pad(shown + 1)}/{pad(PARTS.length)}]</div>
+          <h2 className="panel__name">{part.name}</h2>
+          <p className="panel__pitch">{part.pitch}</p>
+          <dl className="specs">
+            {part.specs.map(([k, v], i) => (
+              <div className="spec" key={`${shown}-${i}`}><dt>{k}</dt><i className="lead" /><dd data-text={v} /></div>
+            ))}
+          </dl>
+          <div className="why"><b>WHY IT MATTERS</b><p>{part.why}</p></div>
         </div>
-      </div>
+      </aside>
     </>
-  )
+  );
 }

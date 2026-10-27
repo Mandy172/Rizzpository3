@@ -1,4 +1,5 @@
 import React from 'react';
+import Sections from './sections';
 import { ThreeCanvas } from './three/ThreeCanvas.jsx';
 import { HUDOverlay } from './hud/HUDOverlay.jsx';
 import { ScrollContainer } from './sections/ScrollContainer.jsx';
@@ -8,6 +9,7 @@ export default function App() {
     <main className="relative w-full bg-bg text-text min-h-screen">
       {/* 4. Fixed full-screen Three.js Canvas behind the DOM (z-index 0) */}
       <ThreeCanvas />
+      <Sections />
 
       {/* Persistent Technical Telemetry HUD & Leader Line */}
       <HUDOverlay />

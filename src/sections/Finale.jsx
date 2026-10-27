@@ -1,45 +1,22 @@
-import { useRef, useEffect } from 'react'
-import { useStore } from '../store.js'
-import '../styles/finale.css'
+import { useInRange, STAGES } from './useAnatomy.js';
 
 export default function Finale() {
-  const scrollStage = useStore((s) => s.scrollStage)
-  const visible     = scrollStage >= 9
-  const headRef     = useRef(null)
-  const revealed    = useRef(false)
-
-  useEffect(() => {
-    if (!visible || revealed.current) return
-    revealed.current = true
-    const el = headRef.current
-    if (!el) return
-    el.style.transition = 'transform 0.9s cubic-bezier(0.16,1,0.3,1), opacity 0.9s ease'
-    el.style.transform  = 'translateY(0)'
-    el.style.opacity    = '1'
-  }, [visible])
-
+  const on = useInRange(STAGES.finale);
   return (
-    <div
-      className="finale"
-      style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease', pointerEvents: visible ? 'auto' : 'none' }}
-      aria-hidden={!visible}
-    >
-      <div
-        ref={headRef}
-        className="finale__headline"
-        style={{ transform: 'translateY(60px)', opacity: 0 }}
-      >
-        10 SYSTEMS.<br />ONE MACHINE.
-      </div>
-
-      <button className="finale__cta" type="button" aria-label="View the full Aprilia RSV4">
-        VIEW THE FULL BIKE
-      </button>
-
-      <div className="finale__footer">
-        Unofficial fan project. Not affiliated with Aprilia.&nbsp;&nbsp;//&nbsp;&nbsp;
-        3D Placeholder · RSV4 RF · 217 HP · 2024
-      </div>
-    </div>
-  )
+    <section className={`fin ${on ? 'is-on' : ''}`}>
+      <div className="hazard" aria-hidden="true" />
+      <h2 className="fin__h">
+        <span className="mask"><span style={{ '--d': '0s' }}>10 SYSTEMS.</span></span>{' '}
+        <span className="mask"><span style={{ '--d': '.12s' }}>ONE MACHINE.</span></span>
+      </h2>
+      <a className="cta" href="https://www.aprilia.com/en_EN/bikes/rsv4/rsv4-factory/" target="_blank" rel="noreferrer">
+        <span>VIEW THE FULL BIKE</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M2 12h18M12 4l8 8-8 8" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" /></svg>
+      </a>
+      <footer className="fin__foot">
+        <span>Unofficial fan project. Not affiliated with Aprilia.</span>
+        <span>3D MODEL: Sujay &amp; Open Engineering Assets</span>
+      </footer>
+    </section>
+  );
 }

@@ -1,73 +1,43 @@
-import { useEffect, useRef } from 'react'
-import { useStore } from '../store.js'
-import '../styles/hero.css'
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { useStore, useInRange, STAGES } from './useAnatomy.js';
+
+const Line = ({ children, out }) => (
+  <span className="mask"><span className={out ? 'out' : undefined}>{children}</span></span>
+);
 
 export default function Hero() {
-  const modelReady  = useStore((s) => s.modelReady)
-  const wrapRef     = useRef(null)
-  const line1Ref    = useRef(null)
-  const line2Ref    = useRef(null)
-  const subRef      = useRef(null)
-  const bottomRef   = useRef(null)
-  const revealed    = useRef(false)
+  const ready = useStore((s) => s.modelReady);
+  const on = useInRange(STAGES.hero);
+  const root = useRef(null);
 
   useEffect(() => {
-    if (!modelReady || revealed.current) return
-    revealed.current = true
-
-    // Use native CSS animation via class toggle (no GSAP dependency on import timing)
-    const els = [line1Ref.current, line2Ref.current, subRef.current, bottomRef.current]
-    els.forEach((el, i) => {
-      if (!el) return
-      el.style.transition = `transform 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 0.12}s, opacity 0.9s ease ${i * 0.12}s`
-      el.style.transform  = 'translateY(0)'
-      el.style.opacity    = '1'
-    })
-  }, [modelReady])
-
-  const style = (delay = 0) => ({
-    transform: 'translateY(110%)',
-    opacity: 0,
-    willChange: 'transform, opacity',
-    transitionDelay: `${delay}s`,
-  })
+    if (!ready) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo('.mask > span', { yPercent: 110 }, { yPercent: 0, duration: 1.1, ease: 'power3.inOut', stagger: 0.12 });
+    }, root);
+    return () => ctx.revert();
+  }, [ready]);
 
   return (
-    <section className="hero" aria-label="Hero">
-      {/* Headline */}
-      <div className="hero__headline">
-        <span className="hero__line-mask">
-          <span className="hero__word hero__word--solid" ref={line1Ref} style={style(0)}>
-            APRILIA
-          </span>
-        </span>
-        <span className="hero__line-mask">
-          <span className="hero__word hero__word--outline" ref={line2Ref} style={style(0.1)}>
-            RSV4
-          </span>
-        </span>
-        <span className="hero__line-mask" style={{ marginTop: '16px' }}>
-          <span className="hero__sub" ref={subRef} style={style(0.22)}>
-            ANATOMY OF A SUPERBIKE
-          </span>
-        </span>
+    <section ref={root} className={`hero ${on ? 'is-on' : ''}`}>
+      <div>
+        <h1 className="hero__h"><Line>APRILIA</Line><Line out>RSV4</Line></h1>
+        <p className="hero__sub"><Line>ANATOMY OF A SUPERBIKE</Line></p>
       </div>
-
-      {/* Bottom row */}
-      <div className="hero__bottom" ref={bottomRef} style={style(0.34)}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
-          <span className="hero__scroll-label">SCROLL TO DISASSEMBLE</span>
-          <div className="hero__arrow">
-            <div className="hero__arrow-line" />
-            <div className="hero__arrow-head" />
-          </div>
+      <div className="hero__bot">
+        <div className="hero__scroll">
+          <span className="out">SCROLL TO DISASSEMBLE</span>
+          <svg className="arrow" viewBox="0 0 24 40" width="22" height="36" aria-hidden="true">
+            <path d="M12 0v36M2 26l10 12 10-12" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" />
+          </svg>
         </div>
-        <div className="hero__stats">
-          <span className="hero__stat">217 HP</span>
-          <span className="hero__stat">1,099 CC</span>
-          <span className="hero__stat">V4</span>
-        </div>
+        <ul className="chips">
+          <li className="chip"><b>217</b> HP</li>
+          <li className="chip"><b>1,099</b> CC</li>
+          <li className="chip"><b>V4</b></li>
+        </ul>
       </div>
     </section>
-  )
+  );
 }

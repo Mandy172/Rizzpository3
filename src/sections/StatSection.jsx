@@ -1,68 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
-import { useStore } from '../store.js'
-import '../styles/stats.css'
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { useInRange, STAGES } from './useAnatomy.js';
 
 const STATS = [
-  { value: 217,   suffix: ' HP',      label: 'PEAK POWER',   decimals: 0 },
-  { value: 65,    suffix: '° V4',     label: 'ENGINE LAYOUT', decimals: 0 },
-  { value: 6,     suffix: '-AXIS',    label: 'IMU SENSORS',  decimals: 0 },
-]
-
-function Counter({ to, suffix, decimals, trigger }) {
-  const [display, setDisplay] = useState('000')
-  const rafRef = useRef(null)
-
-  useEffect(() => {
-    if (!trigger) return
-    const start    = performance.now()
-    const duration = 1600
-    const animate  = (now) => {
-      const t   = Math.min((now - start) / duration, 1)
-      const ease = 1 - Math.pow(1 - t, 4)
-      const cur  = (ease * to).toFixed(decimals)
-      setDisplay(cur)
-      if (t < 1) rafRef.current = requestAnimationFrame(animate)
-    }
-    rafRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [trigger, to, decimals])
-
-  return <span>{display}{suffix}</span>
-}
+  { to: 217, suf: ' HP', label: 'PEAK POWER' },
+  { to: 65, suf: '° V4', label: 'CYLINDER BANK ANGLE' },
+  { to: 6, suf: '-AXIS IMU', label: 'INERTIAL MEASUREMENT UNIT' },
+];
 
 export default function StatSection() {
-  const scrollStage = useStore((s) => s.scrollStage)
-  // Show during electronics/engine stages (2-4)
-  const visible = scrollStage >= 2 && scrollStage <= 4
-  const [triggered, setTriggered] = useState(false)
-  const ref = useRef(null)
-
+  const on = useInRange(STAGES.stats);
+  const root = useRef(null);
   useEffect(() => {
-    if (visible && !triggered) setTriggered(true)
-    if (!visible) setTriggered(false)
-  }, [visible])
+    if (!on) return;
+    const els = [...root.current.querySelectorAll('.stat__n b')];
+    const tws = els.map((el, i) => {
+      const o = { n: 0 };
+      return gsap.to(o, { n: STATS[i].to, duration: 1.4, delay: 0.35 + i * 0.12, ease: 'power3.inOut', onUpdate: () => { el.textContent = Math.round(o.n); } });
+    });
+    return () => { tws.forEach((t) => t.kill()); els.forEach((e) => { e.textContent = '0'; }); };
+  }, [on]);
 
   return (
-    <div
-      ref={ref}
-      className="stat-section"
-      style={{
-        opacity: visible ? 1 : 0,
-        transition: 'opacity 0.5s ease',
-        pointerEvents: 'none',
-      }}
-      aria-hidden={!visible}
-    >
-      <div className="stat-section__inner">
-        {STATS.map((s) => (
-          <div className="stat-item" key={s.label}>
-            <div className="stat-item__value">
-              <Counter to={s.value} suffix={s.suffix} decimals={s.decimals} trigger={triggered} />
-            </div>
-            <div className="stat-item__label">{s.label}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+    <section ref={root} className={`stats ${on ? 'is-on' : ''}`}>
+      {STATS.map((s, i) => (
+        <div className="stat" key={s.label}>
+          <div className="stat__n"><b>0</b><span className="out">{s.suf}</span></div>
+          <div className="stat__l">[0{i + 1}/03] {s.label}</div>
+        </div>
+      ))}
+    </section>
+  );
 }

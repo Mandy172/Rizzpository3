@@ -53,7 +53,7 @@ export const ScrollContainer = () => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full pointer-events-none z-10"
+      className="overlay-scroll-track relative w-full pointer-events-none z-10"
       style={{ height: totalHeight }}
     >
       {/* ================= STAGE 0: INTRO HERO ================= */}
