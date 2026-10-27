@@ -1,15 +1,30 @@
-# APRILIA RSV4 // ANATOMY
-Unofficial fan hackathon project exploring the race-bred engineering and telemetry of the Aprilia RSV4 1100 Factory.
+# APRILIA RSV4 // ANATOMY (RSV4 FACTORY)
+### An immersive 3D WebGL scroll experience built for the Aprilia RSV4 1100 Factory.
+
+> Unofficial fan project · Not affiliated with Aprilia Racing S.r.l. or Piaggio & C. S.p.A.
+
+---
+
+## What is this?
+
+Scroll through every component that makes the RSV4 Factory the most sophisticated production superbike on the planet. Ten parts, ten sections, one bike — all in real-time 3D tech-brutalist telemetry aesthetics.
+
+---
 
 ## Tech Stack
-- Vite + React
-- Three.js / @react-three/fiber / @react-three/drei / @react-three/postprocessing
-- GSAP + ScrollTrigger
-- Lenis Smooth Scroll
-- Zustand
-- Tailwind CSS
 
-## Team Folder Ownership Table
+| Layer | Tools |
+|-------|-------|
+| 3D | Three.js, React Three Fiber, Drei, Postprocessing |
+| Scroll | Lenis smooth scroll + GSAP ScrollTrigger |
+| State | Zustand |
+| Framework | React 18 + Vite |
+| Styling | Tailwind CSS |
+| Fonts | Anton, JetBrains Mono, Space Grotesk |
+
+---
+
+## Team & Folder Ownership
 
 | Path | Owner | Description |
 |------|-------|-------------|
@@ -18,6 +33,29 @@ Unofficial fan hackathon project exploring the race-bred engineering and telemet
 | `src/hud/`, `src/data/`, `public/` | **Kritagya** | Technical HUD overlays, parts database, telemetry metrics, static 3D assets |
 | `src/store/scroll.js` | **Shared Contract** | Shared Zustand state store (progress, velocity, activePartId, hoveredPart, activePartScreenPos, modelReady, muted, lowPower) |
 
-## Disclaimer & Credits
-- Unofficial fan project. Not affiliated with Aprilia.
+---
+
+## Getting Started
+
+```bash
+npm install
+npm run dev          # http://localhost:5173
+npm run build        # production bundle
+```
+
+---
+
+## Data Sources & Credits
+
+All Aprilia RSV4 specifications are sourced from:
+- [aprilia.com/en_EN/bikes/rsv4/rsv4-factory/](https://www.aprilia.com/en_EN/bikes/rsv4/rsv4-factory/)
+- Cross-referenced with motorcyclespecs.co.za and motorcycle.com
 - 3D Model Author & Procedural Geometry: Sujay & Open Engineering Assets.
+
+---
+
+## Disclaimer
+
+This is an **unofficial fan project** created for educational and creative purposes.  
+Not affiliated with, endorsed by, or sponsored by **Aprilia Racing S.r.l.** or **Piaggio & C. S.p.A.**  
+All trademarks, brand names, and product names are the property of their respective owners.

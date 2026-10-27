@@ -1,0 +1,116 @@
+/* ─── HERO ───────────────────────────────────────────────────── */
+.hero {
+  position: fixed;
+  inset: 0;
+  top: 32px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 40px 32px;
+  pointer-events: none;
+}
+
+.hero__headline {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.88;
+  overflow: hidden;
+}
+
+.hero__word {
+  font-family: var(--display);
+  font-size: clamp(80px, 14vw, 220px);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  display: block;
+  overflow: hidden;
+}
+
+.hero__word--solid {
+  color: var(--white);
+}
+
+.hero__word--outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--white);
+}
+
+.hero__sub {
+  font-family: var(--mono);
+  font-size: clamp(9px, 1.1vw, 14px);
+  letter-spacing: 0.3em;
+  color: var(--gray-mid);
+  margin-top: 24px;
+  text-transform: uppercase;
+}
+
+/* Bottom row */
+.hero__bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.hero__scroll-label {
+  font-family: var(--mono);
+  font-size: clamp(9px, 0.9vw, 12px);
+  letter-spacing: 0.25em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--white);
+  text-transform: uppercase;
+}
+
+.hero__arrow {
+  width: 24px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-left: 16px;
+  animation: arrowBounce 1.4s steps(1) infinite;
+}
+
+@keyframes arrowBounce {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+
+.hero__arrow-line {
+  width: 1px;
+  height: 24px;
+  background: var(--white);
+}
+
+.hero__arrow-head {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid var(--white);
+}
+
+/* Stat chips */
+.hero__stats {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.hero__stat {
+  font-family: var(--mono);
+  font-size: clamp(9px, 0.85vw, 11px);
+  letter-spacing: 0.15em;
+  color: var(--black);
+  background: var(--red);
+  padding: 4px 12px;
+  text-transform: uppercase;
+}
+
+/* Line-mask reveal */
+.hero__line-mask {
+  overflow: hidden;
+  display: block;
+}

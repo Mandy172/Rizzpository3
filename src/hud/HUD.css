@@ -1,0 +1,150 @@
+/* HUD.css */
+:root {
+  --hud-accent: #d4ff00;
+  --hud-red:    #ff2200;
+  --hud-dim:    #333;
+  --hud-bg:     rgba(0,0,0,0.55);
+  --hud-font:   'JetBrains Mono', monospace;
+}
+
+.hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  font-family: var(--hud-font);
+}
+
+/* ── Corner brackets ───────────────────────────────────────────────── */
+.hud__bracket {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+}
+.hud__bracket--tl { top: 1.25rem; left: 1.25rem; border-top: 1px solid var(--hud-accent); border-left: 1px solid var(--hud-accent); }
+.hud__bracket--tr { top: 1.25rem; right: 1.25rem; border-top: 1px solid var(--hud-accent); border-right: 1px solid var(--hud-accent); }
+.hud__bracket--bl { bottom: 1.25rem; left: 1.25rem; border-bottom: 1px solid var(--hud-accent); border-left: 1px solid var(--hud-accent); }
+.hud__bracket--br { bottom: 1.25rem; right: 1.25rem; border-bottom: 1px solid var(--hud-accent); border-right: 1px solid var(--hud-accent); }
+
+/* ── Telemetry block ───────────────────────────────────────────────── */
+.hud__telem {
+  position: absolute;
+  top: 2.2rem;
+  left: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  background: var(--hud-bg);
+  border: 1px solid #1c1c1c;
+  padding: 0.9rem 1.1rem;
+  backdrop-filter: blur(6px);
+  min-width: 160px;
+}
+
+.hud__label {
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--hud-dim);
+  display: block;
+  margin-bottom: 0.1rem;
+}
+.hud__value {
+  font-size: 0.9rem;
+  color: var(--hud-accent);
+  letter-spacing: 0.08em;
+}
+.hud__value--lg  { font-size: 1.3rem; font-weight: 700; }
+.hud__value--xl  { font-size: 2rem;   font-weight: 700; }
+.hud__value--red { color: var(--hud-red) !important; }
+
+.hud__row { display: flex; flex-direction: column; }
+
+/* RPM bar */
+.hud__rpm-wrap { display: flex; flex-direction: column; gap: 0.3rem; }
+.hud__rpm-bar-track {
+  width: 100%;
+  height: 3px;
+  background: #111;
+  position: relative;
+  overflow: hidden;
+}
+.hud__rpm-bar-fill {
+  height: 100%;
+  background: var(--hud-accent);
+  transition: width 0.12s linear;
+}
+.hud__rpm-bar-fill--red { background: var(--hud-red); }
+
+/* ── Scroll progress bar ───────────────────────────────────────────── */
+.hud__progress {
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 180px;
+}
+.hud__progress-track {
+  position: relative;
+  width: 2px;
+  height: 100%;
+  background: #1a1a1a;
+}
+.hud__progress-fill {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: var(--hud-accent);
+  transition: height 0.15s linear;
+}
+.hud__tick {
+  position: absolute;
+  left: -3px;
+  width: 8px;
+  height: 1px;
+  background: #2a2a2a;
+  transform: translateY(-50%);
+  transition: background 0.3s;
+}
+.hud__tick--active { background: var(--hud-accent); }
+
+/* ── Mute button ───────────────────────────────────────────────────── */
+.hud__mute {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 2.2rem;
+  background: none;
+  border: 1px solid var(--hud-dim);
+  color: var(--hud-dim);
+  font-family: var(--hud-font);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  pointer-events: all;
+  transition: color 0.2s, border-color 0.2s;
+}
+.hud__mute:hover {
+  color: var(--hud-accent);
+  border-color: var(--hud-accent);
+}
+
+/* ── Session label ─────────────────────────────────────────────────── */
+.hud__session {
+  position: absolute;
+  top: 2.2rem;
+  right: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+/* ── Mobile ────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hud__telem   { display: none; }
+  .hud__session { display: none; }
+  .hud__progress { height: 120px; }
+  .hud__bracket { width: 16px; height: 16px; }
+  .hud__mute { font-size: 0.55rem; padding: 0.3rem 0.5rem; }
+}

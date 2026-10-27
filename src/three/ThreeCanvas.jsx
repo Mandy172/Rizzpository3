@@ -32,3 +32,5 @@ export const ThreeCanvas = () => {
     </div>
   );
 };
+
+export default ThreeCanvas;

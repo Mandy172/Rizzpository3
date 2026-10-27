@@ -1,0 +1,46 @@
+/* ─── DESIGN TOKENS ─────────────────────────────────────────── */
+:root {
+  --red: #FF1E1E;
+  --black: #000000;
+  --white: #FFFFFF;
+  --gray-dim: rgba(255,255,255,0.06);
+  --gray-mid: rgba(255,255,255,0.35);
+  --mono: 'Space Mono', monospace;
+  --condensed: 'Barlow Condensed', sans-serif;
+  --display: 'Anton', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  background: #000;
+  color: var(--white);
+  font-family: var(--mono);
+  overflow-x: hidden;
+  scroll-behavior: auto;
+}
+
+body {
+  background: #000;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  position: relative;
+}
+
+/* scrollable track: each scroll stage is 100vh */
+.scroll-track {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.scroll-stage {
+  height: 100vh;
+  pointer-events: none;
+}
+
+/* utility */
+.sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }

@@ -13,11 +13,16 @@ export default {
         muted: '#8a8a85',
         accent: '#e10600',
         hud: '#d4ff00',
+        red: {
+          DEFAULT: '#e10600',
+          bright: '#ff1e1e',
+        },
       },
       fontFamily: {
         anton: ['Anton', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
         space: ['"Space Grotesk"', 'sans-serif'],
+        grotesk: ['"Space Grotesk"', 'sans-serif'],
       },
       borderRadius: {
         DEFAULT: '0px',
@@ -32,8 +37,9 @@ export default {
       },
       borderColor: {
         subtle: 'rgba(242,242,240,0.18)',
+        blueprint: 'rgba(242,242,240,0.18)',
       },
     },
   },
   plugins: [],
-}
+};

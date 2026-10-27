@@ -1,0 +1,88 @@
+/* Preloader.css */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  font-family: 'JetBrains Mono', monospace;
+  transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+  clip-path: inset(0 0 0 0);
+}
+
+.preloader--wipe {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* ── Mute button ──────────────────────────────────────────────────── */
+.preloader__mute {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: 1px solid #333;
+  color: #555;
+  font-family: inherit;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.preloader__mute:hover {
+  color: #d4ff00;
+  border-color: #d4ff00;
+}
+
+/* ── Gauge ────────────────────────────────────────────────────────── */
+.preloader__gauge {
+  filter: drop-shadow(0 0 20px rgba(212, 255, 0, 0.2));
+}
+
+/* ── Boot log ─────────────────────────────────────────────────────── */
+.preloader__log {
+  width: min(420px, 90vw);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  line-height: 1.9;
+  color: #444;
+}
+
+.preloader__log-line {
+  color: #444;
+  transition: color 0.3s;
+}
+.preloader__log-line--active {
+  color: #d4ff00;
+}
+.preloader__prompt {
+  color: #333;
+  margin-right: 0.3em;
+}
+.preloader__cursor {
+  animation: blink 0.9s step-start infinite;
+  color: #d4ff00;
+  margin-left: 2px;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Await status ─────────────────────────────────────────────────── */
+.preloader__status {
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: #333;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
