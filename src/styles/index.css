@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  border-radius: 0px !important;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #0a0a0a;
+  color: #f2f2f0;
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* Hard border utility matching GEMINI.md */
+.border-blueprint {
+  border: 1px solid rgba(242, 242, 240, 0.18);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #e10600;
+}
