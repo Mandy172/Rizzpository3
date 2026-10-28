@@ -42,6 +42,10 @@ export const BikeModel = () => {
   const groupRef = useRef();
   const modelRootRef = useRef();
   const hotspotMeshRef = useRef();
+  const outerReticleRef = useRef();
+  const wheelsRef = useRef([]);
+  const meshPartMapRef = useRef(new Map());
+  const originalMaterialsRef = useRef(new Map());
 
   // Reusable vectors for zero-garbage 60 FPS performance
   const reusable = useMemo(() => ({
@@ -55,21 +59,46 @@ export const BikeModel = () => {
     defaultEmissive: new THREE.Color('#000000'),
   }), []);
 
-  // 1. MODEL INITIALIZATION & MATERIAL RESTORATION
+  // 1. MODEL INITIALIZATION, MESH MAPPING & MATERIAL RESTORATION
   useEffect(() => {
     if (!scene) return;
 
-    // Keep the repaired GLB's PBR values, alpha modes, and glass behavior intact.
+    const wheels = [];
+    meshPartMapRef.current.clear();
+    originalMaterialsRef.current.clear();
+
     scene.traverse((child) => {
+      if (child.name.includes('Wheel_Assembly') || child.name === 'Wheel_Front' || child.name === 'Rear_Wheel') {
+        wheels.push(child);
+      }
+
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+
+        const partId = getPartIdForMeshName(child.name);
+        if (partId) {
+          meshPartMapRef.current.set(child, partId);
+        }
+
+        if (child.material && child.material.isMeshStandardMaterial) {
+          const mat = child.material.clone();
+          originalMaterialsRef.current.set(child, {
+            origEmissive: mat.emissive ? mat.emissive.clone() : new THREE.Color(0, 0, 0),
+            origEmissiveIntensity: mat.emissiveIntensity || 0,
+          });
+          child.material = mat;
+        }
       }
     });
+
+    wheelsRef.current = wheels;
 
     console.log(`[3D MODEL // ${MOTORCYCLE_CONFIG.visualModelName}] Loaded:`, {
       source: MOTORCYCLE_CONFIG.geometry.source,
       meshes: MOTORCYCLE_CONFIG.geometry.meshCount,
+      mappedParts: meshPartMapRef.current.size,
+      wheelsFound: wheels.length,
       primitives: MOTORCYCLE_CONFIG.geometry.primitiveCount,
       vertices: MOTORCYCLE_CONFIG.geometry.vertexCount.toLocaleString(),
       triangles: MOTORCYCLE_CONFIG.geometry.triangleCount.toLocaleString(),
@@ -103,7 +132,7 @@ export const BikeModel = () => {
   }, [progress, inspectionMode]);
 
   // 2. FRAME ANIMATION & CAMERA INTERPOLATION
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const curProgress = Math.max(0, Math.min(1, progress));
     const totalSegments = 12;
     const rawSegment = curProgress * totalSegments;
@@ -156,12 +185,12 @@ export const BikeModel = () => {
 
       targetFov = THREE.MathUtils.lerp(kfCurrent.fov, kfNext.fov, easedT);
 
-      // Subtle atmospheric camera drift during intro hero stage
-      if (segIndex === 0) {
-        const driftSpeed = state.clock.elapsedTime * 0.25;
-        targetCamPos.z += Math.sin(driftSpeed) * 0.05;
-        targetCamPos.y += Math.cos(driftSpeed * 0.8) * 0.02;
-      }
+      // Multi-frequency organic camera breathing across all stages
+      const breatheTime = state.clock.elapsedTime * 0.75;
+      const breatheAmp = segIndex === 0 ? 0.04 : 0.016;
+      targetCamPos.z += Math.sin(breatheTime * 0.7) * breatheAmp;
+      targetCamPos.y += Math.cos(breatheTime * 1.1) * (breatheAmp * 0.6);
+      targetCamPos.x += Math.sin(breatheTime * 0.4) * (breatheAmp * 0.4);
     }
 
     // Responsive FOV adjustment for portrait mobile screens
@@ -172,29 +201,71 @@ export const BikeModel = () => {
       }
     }
 
-    // Smooth camera dolly and focal tracking
-    camera.position.lerp(targetCamPos, 0.12);
-    reusable.currentLookAt.lerp(targetLookAt, 0.12);
+    // Framerate-independent exponential smoothing
+    const dampFactor = 1 - Math.exp(-8.5 * Math.min(delta, 0.1));
+    camera.position.lerp(targetCamPos, dampFactor);
+    reusable.currentLookAt.lerp(targetLookAt, dampFactor);
     camera.lookAt(reusable.currentLookAt);
 
+    // Dynamic motorcycle banking roll when turning and scrolling
+    const scrollVel = useScrollStore.getState().scrollVelocity || 0;
+    const targetRoll = -Math.sin(curProgress * Math.PI * 3.5) * 0.032 - Math.max(-0.05, Math.min(0.05, scrollVel * 0.012));
+    camera.rotation.z = THREE.MathUtils.lerp(camera.rotation.z, targetRoll, dampFactor);
+
     if (Math.abs(camera.fov - targetFov) > 0.05) {
-      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, 0.12);
+      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, dampFactor);
       camera.updateProjectionMatrix();
     }
 
-    // Dynamic 3D Telemetry Hotspot & Screen Leader-Line Projection (active during anatomy scroll, suppressed during 360° inspection)
+    // Dynamic Wheel Spin synchronized with scroll progress & velocity
+    const wheelSpinAngle = curProgress * Math.PI * 26 + scrollVel * 0.02;
+    for (let i = 0; i < wheelsRef.current.length; i++) {
+      wheelsRef.current[i].rotation.z = wheelSpinAngle;
+    }
+
+    // Active & Hovered Part Mesh Emissive Pulse
+    const highlightTarget = hoveredPart || currentActivePartId;
+    const pulseIntensity = 0.45 + Math.sin(state.clock.elapsedTime * 5.0) * 0.2;
+
+    meshPartMapRef.current.forEach((pId, mesh) => {
+      const orig = originalMaterialsRef.current.get(mesh);
+      if (!orig || !mesh.material) return;
+
+      const isTarget = pId === highlightTarget;
+      if (isTarget) {
+        mesh.material.emissive.lerp(reusable.redEmissive, 0.2);
+        mesh.material.emissiveIntensity = THREE.MathUtils.lerp(
+          mesh.material.emissiveIntensity,
+          pulseIntensity,
+          0.2
+        );
+      } else if (mesh.material.emissiveIntensity > 0.005) {
+        mesh.material.emissive.lerp(orig.origEmissive, 0.12);
+        mesh.material.emissiveIntensity = THREE.MathUtils.lerp(
+          mesh.material.emissiveIntensity,
+          orig.origEmissiveIntensity,
+          0.12
+        );
+      }
+    });
+
+    // Dynamic 3D Telemetry Hotspot & Screen Leader-Line Projection
     const showTelemetryHotspot = !inspectionMode && currentActivePartId && partHotspots[currentActivePartId];
     if (showTelemetryHotspot) {
       const hotspot = partHotspots[currentActivePartId];
       reusable.hotspotWorldPos.copy(hotspot);
 
-      // Animate 3D targeting reticle ring
+      // Animate 3D targeting reticle
       if (hotspotMeshRef.current) {
         hotspotMeshRef.current.position.copy(hotspot);
         hotspotMeshRef.current.visible = true;
-        const pulse = 1 + Math.sin(state.clock.elapsedTime * 4.5) * 0.15;
+        const pulse = 1 + Math.sin(state.clock.elapsedTime * 4.5) * 0.12;
         hotspotMeshRef.current.scale.set(pulse, pulse, pulse);
         hotspotMeshRef.current.lookAt(camera.position);
+
+        if (outerReticleRef.current) {
+          outerReticleRef.current.rotation.z = state.clock.elapsedTime * 1.8;
+        }
       }
 
       // Project 3D world coordinate to 2D viewport pixels
@@ -237,31 +308,36 @@ export const BikeModel = () => {
 
       {/* 3D Telemetry Targeting Reticle Marker */}
       <group ref={hotspotMeshRef} visible={false}>
-        {/* Outer targeting ring */}
-        <mesh>
-          <ringGeometry args={[0.07, 0.082, 32]} />
+        {/* Rotating outer segmented targeting ring */}
+        <mesh ref={outerReticleRef}>
+          <ringGeometry args={[0.082, 0.096, 32]} />
           <meshBasicMaterial color="#e10600" transparent opacity={0.85} side={THREE.DoubleSide} />
+        </mesh>
+        {/* Secondary inner telemetry ring */}
+        <mesh>
+          <ringGeometry args={[0.052, 0.058, 24]} />
+          <meshBasicMaterial color="#d4ff00" transparent opacity={0.65} side={THREE.DoubleSide} />
         </mesh>
         {/* Inner pulsing bullseye */}
         <mesh>
-          <circleGeometry args={[0.024, 16]} />
+          <circleGeometry args={[0.02, 16]} />
           <meshBasicMaterial color="#ffffff" transparent opacity={0.9} side={THREE.DoubleSide} />
         </mesh>
         {/* Crosshair accents */}
-        <mesh position={[0.095, 0, 0]}>
-          <planeGeometry args={[0.025, 0.005]} />
+        <mesh position={[0.11, 0, 0]}>
+          <planeGeometry args={[0.028, 0.005]} />
           <meshBasicMaterial color="#e10600" />
         </mesh>
-        <mesh position={[-0.095, 0, 0]}>
-          <planeGeometry args={[0.025, 0.005]} />
+        <mesh position={[-0.11, 0, 0]}>
+          <planeGeometry args={[0.028, 0.005]} />
           <meshBasicMaterial color="#e10600" />
         </mesh>
-        <mesh position={[0, 0.095, 0]}>
-          <planeGeometry args={[0.005, 0.025]} />
+        <mesh position={[0, 0.11, 0]}>
+          <planeGeometry args={[0.005, 0.028]} />
           <meshBasicMaterial color="#e10600" />
         </mesh>
-        <mesh position={[0, -0.095, 0]}>
-          <planeGeometry args={[0.005, 0.025]} />
+        <mesh position={[0, -0.11, 0]}>
+          <planeGeometry args={[0.005, 0.028]} />
           <meshBasicMaterial color="#e10600" />
         </mesh>
       </group>

@@ -38,9 +38,30 @@
 
 /* INFO PANEL */
 .leader{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.leader path{fill:none;stroke:var(--red);stroke-width:1}.leader rect{fill:var(--red)}
+.leader path{
+  fill:none;
+  stroke:var(--hud);
+  stroke-width:1.5;
+  stroke-dasharray: 6 3;
+  animation: leaderFlow 0.8s linear infinite;
+  filter: drop-shadow(0 0 3px rgba(212,255,0,0.6));
+}
+.leader rect{
+  fill:var(--red);
+  transform-origin: center;
+  animation: nodePulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes leaderFlow {
+  to { stroke-dashoffset: -18; }
+}
+@keyframes nodePulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.6); }
+}
 .panel{position:absolute;top:calc(var(--bar) + 8px + 6vh);width:clamp(300px,28vw,440px);max-height:calc(100svh - var(--bar) - 28vh);
-overflow:hidden;background:rgba(10,10,10,.88);border:1px solid var(--red);font-size:clamp(11px,1.5vh,14px);
+overflow:hidden;background:rgba(10,10,10,.92);border:1px solid var(--red);font-size:clamp(11px,1.5vh,14px);
+box-shadow: 0 0 24px rgba(0,0,0,0.9), 0 0 10px rgba(225,6,0,0.25);
+backdrop-filter: blur(8px);
 transition:clip-path .5s var(--ease),transform .4s var(--ease)}
 .panel--l{left:var(--gut);clip-path:inset(0 100% 0 0)}.panel--r{right:var(--gut);clip-path:inset(0 0 0 100%)}
 .panel.is-in{clip-path:inset(0)}

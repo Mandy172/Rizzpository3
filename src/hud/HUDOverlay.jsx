@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useScrollStore } from '../store/scroll.js';
 import { parts } from '../data/parts.js';
 import { MOTORCYCLE_CONFIG } from '../data/motorcycleConfig.js';
@@ -21,11 +21,39 @@ export const HUDOverlay = () => {
 
   const activePart = parts.find((p) => p.id === activePartId);
 
-  // Dynamic telemetry math calibrated for Aprilia RS 457 (10,500 RPM max, 185 km/h top speed)
-  const rpm = Math.round(MOTORCYCLE_CONFIG.specs.idleRpm + progress * (MOTORCYCLE_CONFIG.specs.maxRpm - MOTORCYCLE_CONFIG.specs.idleRpm));
-  const speed = Math.round(progress * 185);
+  // Target telemetry values
+  const targetRpm = Math.round(MOTORCYCLE_CONFIG.specs.idleRpm + progress * (MOTORCYCLE_CONFIG.specs.maxRpm - MOTORCYCLE_CONFIG.specs.idleRpm));
+  const targetSpeed = Math.round(progress * 185);
   const gear = progress < 0.08 ? 'N' : progress < 0.22 ? '1' : progress < 0.4 ? '2' : progress < 0.6 ? '3' : progress < 0.8 ? '4' : progress < 0.95 ? '5' : '6';
   const leanAngle = Math.sin(progress * Math.PI * 4) * 44;
+
+  // Smoothed numeric displays for racing gauge realism
+  const [smoothRpm, setSmoothRpm] = useState(targetRpm);
+  const [smoothSpeed, setSmoothSpeed] = useState(targetSpeed);
+  const rafRef = useRef();
+
+  useEffect(() => {
+    const updateGauges = () => {
+      setSmoothRpm((prev) => {
+        const diff = targetRpm - prev;
+        if (Math.abs(diff) < 2) return targetRpm;
+        return Math.round(prev + diff * 0.14);
+      });
+      setSmoothSpeed((prev) => {
+        const diff = targetSpeed - prev;
+        if (Math.abs(diff) < 1) return targetSpeed;
+        return Math.round(prev + diff * 0.12);
+      });
+      rafRef.current = requestAnimationFrame(updateGauges);
+    };
+    rafRef.current = requestAnimationFrame(updateGauges);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [targetRpm, targetSpeed]);
+
+  // Tachometer 20-segment calculation
+  const rpmPercent = Math.max(0, Math.min(1, (smoothRpm - MOTORCYCLE_CONFIG.specs.idleRpm) / (MOTORCYCLE_CONFIG.specs.maxRpm - MOTORCYCLE_CONFIG.specs.idleRpm)));
+  const totalSegments = 20;
+  const litSegments = Math.round(rpmPercent * totalSegments);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-10 flex flex-col justify-between p-6 select-none">
@@ -109,88 +137,42 @@ export const HUDOverlay = () => {
         </div>
       </header>
 
-      {/* ================= DYNAMIC 3D LEADER LINE ================= */}
-      {activePartScreenPos && activePart && (
-        <svg className="fixed inset-0 pointer-events-none w-full h-full z-20 overflow-visible">
-          {/* Pulsing Target Reticle at active part 3D coordinate */}
-          <g transform={`translate(${activePartScreenPos.x}, ${activePartScreenPos.y})`}>
-            <circle r="18" fill="none" stroke="#e10600" strokeWidth="1" strokeDasharray="4 2" />
-            <circle r="4" fill="#e10600" />
-            <line x1="-26" y1="0" x2="-8" y2="0" stroke="#e10600" strokeWidth="1" />
-            <line x1="8" y1="0" x2="26" y2="0" stroke="#e10600" strokeWidth="1" />
-            <line x1="0" y1="-26" x2="0" y2="-8" stroke="#e10600" strokeWidth="1" />
-            <line x1="0" y1="8" x2="0" y2="26" stroke="#e10600" strokeWidth="1" />
-          </g>
+      {/* ================= TACHOMETER LED SWEEP BAR ================= */}
+      <div className="w-full flex items-center justify-between border-b border-subtle/40 py-1.5 px-1 bg-surface/60 pointer-events-auto">
+        <div className="flex items-center gap-2 font-mono text-[10px] text-muted">
+          <span className="text-accent font-bold">RPM TACH</span>
+          <span>//</span>
+          <span className="text-hud font-bold">{smoothRpm.toLocaleString()}</span>
+          <span>/</span>
+          <span>{MOTORCYCLE_CONFIG.specs.maxRpm.toLocaleString()}</span>
+        </div>
+        
+        {/* 20 Segment High-Intensity LED Meter */}
+        <div className="flex items-center gap-1">
+          {Array.from({ length: totalSegments }).map((_, idx) => {
+            const isLit = idx < litSegments;
+            const isRedline = idx >= 16;
+            const isAmber = idx >= 12 && idx < 16;
+            const colorClass = isLit
+              ? isRedline
+                ? 'bg-accent shadow-sm shadow-accent animate-pulse'
+                : isAmber
+                ? 'bg-amber-400'
+                : 'bg-hud'
+              : 'bg-white/10';
 
-          {/* Hard angled technical leader line from crosshair to right-hand info panel */}
-          <polyline
-            points={`
-              ${activePartScreenPos.x},${activePartScreenPos.y}
-              ${activePartScreenPos.x + 60},${activePartScreenPos.y - 40}
-              ${Math.max(activePartScreenPos.x + 120, window.innerWidth - 380)},${activePartScreenPos.y - 40}
-            `}
-            fill="none"
-            stroke="#d4ff00"
-            strokeWidth="1.5"
-            strokeDasharray="6 3"
-          />
-        </svg>
-      )}
-
-      {/* ================= ACTIVE PART TELEMETRY CARD (RIGHT SIDE) ================= */}
-      {activePart && (
-        <aside
-          className="fixed right-8 top-1/2 -translate-y-1/2 w-80 bg-surface border border-blueprint p-5 pointer-events-auto z-30"
-          style={{
-            boxShadow: '0 0 24px rgba(0,0,0,0.85)',
-          }}
-        >
-          <div className="flex items-center justify-between border-b border-subtle pb-2 mb-3">
-            <span className="font-mono text-xs text-hud font-bold tracking-widest">
-              COMPONENT IDENT // [0{activePart.index + 1}]
-            </span>
-            <span className="font-mono text-xs text-accent uppercase tracking-wider">
-              INSPECTION
-            </span>
-          </div>
-
-          <h2 className="font-anton text-2xl text-text tracking-wide uppercase mb-2">
-            {activePart.name}
-          </h2>
-
-          <div className="space-y-2 my-4">
-            <div className="flex justify-between border-b border-subtle/50 pb-1 font-mono text-xs">
-              <span className="text-muted">SYSTEM ID:</span>
-              <span className="text-text font-bold uppercase">{activePart.id}</span>
-            </div>
-            <div className="flex justify-between border-b border-subtle/50 pb-1 font-mono text-xs">
-              <span className="text-muted">POWER RATIO:</span>
-              <span className="text-hud font-bold">0.27 HP/KG</span>
-            </div>
-            <div className="flex justify-between border-b border-subtle/50 pb-1 font-mono text-xs">
-              <span className="text-muted">CALIBRATION:</span>
-              <span className="text-text font-bold">NOMINAL (±0.02mm)</span>
-            </div>
-          </div>
-
-          {/* Part Overview */}
-          <div className="bg-bg border border-blueprint p-3 font-mono text-xs text-muted leading-relaxed">
-            <p className="text-text font-bold mb-1 text-[11px] uppercase tracking-wider text-accent">
-              ENGINEERING NOTE:
-            </p>
-            {activePart.id === 'engine' && 'Liquid-cooled 457cc parallel twin with 270° crank, delivering 47.6 HP @ 9,400 RPM with A2 class-leading power-to-weight.'}
-            {activePart.id === 'frame' && 'Dual-beam aluminium perimeter chassis integrating the forward-canted engine as a stressed structural member.'}
-            {activePart.id === 'front-fork' && '41mm upside-down (USD) front forks with 120mm travel and preload adjustability.'}
-            {activePart.id === 'front-brakes' && '320mm floating steel disc clamped by ByBre radial 4-piston caliper with Bosch dual-channel ABS.'}
-            {activePart.id === 'electronics' && 'APRC electronic suite with Ride-by-Wire, 3 Riding Modes (Eco, Rain, Sport), and 3-level Traction Control.'}
-            {activePart.id === 'winglets' && 'MotoGP-derived double front fairing with internal aerodynamic ducts to optimize airflow stability.'}
-            {activePart.id === 'exhaust' && '2-into-1 low-slung underbelly silencer centralizing mass and projecting the 270° twin rumble.'}
-            {activePart.id === 'swingarm-shock' && 'Asymmetric high-rigidity swingarm with progressive monoshock and 130mm wheel travel.'}
-            {activePart.id === 'wheels' && '17-inch multi-spoke sport alloy rims wrapped in 110/70 and 150/60 sport radial tyres with Aprilia red rim tape.'}
-            {activePart.id === 'cockpit' && '5-inch full-color TFT optical dashboard with illuminated handlebar switchgear and clip-ons.'}
-          </div>
-        </aside>
-      )}
+            return (
+              <div
+                key={idx}
+                className={`w-2.5 md:w-3.5 h-2 transition-all duration-75 ${colorClass}`}
+                style={{
+                  clipPath: 'polygon(15% 0, 100% 0, 85% 100%, 0 100%)',
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
 
       {/* ================= HOVER READOUT BAR ================= */}
       {hoveredPart && (
@@ -205,20 +187,20 @@ export const HUDOverlay = () => {
       {/* ================= FOOTER TELEMETRY HUD ================= */}
       <footer className="border-t border-subtle pt-4 pointer-events-auto flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Live Gauges */}
-        <div className="flex items-center gap-6 font-mono text-xs">
+        <div className="flex items-center gap-4 md:gap-6 font-mono text-xs">
           <div className="border border-blueprint px-3 py-1.5 bg-surface">
             <span className="text-muted mr-2">RPM</span>
-            <span className="text-hud font-bold">{rpm}</span>
+            <span className="text-hud font-bold">{smoothRpm}</span>
           </div>
 
           <div className="border border-blueprint px-3 py-1.5 bg-surface">
             <span className="text-muted mr-2">SPEED</span>
-            <span className="text-text font-bold">{speed} <span className="text-muted text-[10px]">KM/H</span></span>
+            <span className="text-text font-bold">{smoothSpeed} <span className="text-muted text-[10px]">KM/H</span></span>
           </div>
 
-          <div className="border border-blueprint px-3 py-1.5 bg-surface">
-            <span className="text-muted mr-2">GEAR</span>
-            <span className="text-accent font-bold text-sm">{gear}</span>
+          <div className="border border-blueprint px-3 py-1.5 bg-surface flex items-center gap-2">
+            <span className="text-muted">GEAR</span>
+            <span className="text-accent font-bold text-sm bg-accent/10 px-1.5 py-0.5 border border-accent/40">{gear}</span>
           </div>
 
           <div className="border border-blueprint px-3 py-1.5 bg-surface">
