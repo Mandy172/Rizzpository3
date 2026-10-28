@@ -2,6 +2,7 @@ import React from 'react';
 import { useScrollStore } from '../store/scroll.js';
 import { parts } from '../data/parts.js';
 import { MOTORCYCLE_CONFIG } from '../data/motorcycleConfig.js';
+import { MODEL_CREDIT } from '../data/credits.js';
 
 export const HUDOverlay = () => {
   const activePartId = useScrollStore((s) => s.activePartId);
@@ -17,8 +18,6 @@ export const HUDOverlay = () => {
   const toggleInspectionMode = useScrollStore((s) => s.toggleInspectionMode);
   const inspectionView = useScrollStore((s) => s.inspectionView);
   const setInspectionView = useScrollStore((s) => s.setInspectionView);
-  const useOptimizedModel = useScrollStore((s) => s.useOptimizedModel);
-  const toggleOptimizedModel = useScrollStore((s) => s.toggleOptimizedModel);
 
   const activePart = parts.find((p) => p.id === activePartId);
 
@@ -41,7 +40,7 @@ export const HUDOverlay = () => {
             </span>
           </div>
           <span className="font-mono text-xs text-muted tracking-widest mt-1">
-            ANATOMY TELEMETRY SYSTEM // RS 457 CHASSIS SPEC
+            ANATOMY TELEMETRY SYSTEM // TECHNICAL CONCEPT
           </span>
         </div>
 
@@ -82,17 +81,6 @@ export const HUDOverlay = () => {
               ))}
             </div>
           )}
-
-          {/* Model Geometry Resolution Toggle */}
-          <button
-            onClick={toggleOptimizedModel}
-            title={useOptimizedModel ? 'Currently using 26MB optimized mesh. Click for 60MB raw.' : 'Currently using 60MB raw mesh. Click for 26MB optimized.'}
-            className={`font-mono text-xs px-3 py-1.5 border border-blueprint transition-colors ${
-              useOptimizedModel ? 'bg-hud text-bg font-bold' : 'bg-surface text-text hover:border-accent'
-            }`}
-          >
-            GLB: {useOptimizedModel ? 'OPT 26MB' : 'RAW 60MB'}
-          </button>
 
           {/* Low Power Toggle */}
           <button
@@ -248,7 +236,11 @@ export const HUDOverlay = () => {
         <div className="font-mono text-[11px] text-muted text-center md:text-right">
           <div>{MOTORCYCLE_CONFIG.disclaimer}</div>
           <div className="text-[10px] text-muted/70">
-            {MOTORCYCLE_CONFIG.name} Concept Experience • Rodin 3D Model Integration
+            {MOTORCYCLE_CONFIG.name} concept • visual model: {MOTORCYCLE_CONFIG.visualModelName}
+          </div>
+          <div className="text-[10px] text-muted/70">
+            <a href={MODEL_CREDIT.url} target="_blank" rel="noreferrer" className="underline pointer-events-auto">{MODEL_CREDIT.name} by {MODEL_CREDIT.author}</a> •{' '}
+            <a href={MODEL_CREDIT.licenseUrl} target="_blank" rel="noreferrer" className="underline pointer-events-auto">CC BY-NC-SA 3.0 (noncommercial)</a>
           </div>
         </div>
       </footer>

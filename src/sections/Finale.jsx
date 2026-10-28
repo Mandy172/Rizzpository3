@@ -1,5 +1,6 @@
 import { useInRange, STAGES } from './useAnatomy.js';
 import { MOTORCYCLE_CONFIG } from '../data/motorcycleConfig.js';
+import { MODEL_CREDIT } from '../data/credits.js';
 
 export default function Finale() {
   const on = useInRange(STAGES.finale);
@@ -16,7 +17,12 @@ export default function Finale() {
       </a>
       <footer className="fin__foot">
         <span>{MOTORCYCLE_CONFIG.disclaimer}</span>
-        <span>RODIN 3D MODEL INTEGRATION • {MOTORCYCLE_CONFIG.name}</span>
+        <span>
+          <a href={MODEL_CREDIT.url} target="_blank" rel="noreferrer" className="underline pointer-events-auto">{MODEL_CREDIT.name} by {MODEL_CREDIT.author}</a>
+          {' • '}
+          <a href={MODEL_CREDIT.licenseUrl} target="_blank" rel="noreferrer" className="underline pointer-events-auto">CC BY-NC-SA 3.0 (noncommercial)</a>
+          {' • '}{MOTORCYCLE_CONFIG.name} concept
+        </span>
       </footer>
     </section>
   );

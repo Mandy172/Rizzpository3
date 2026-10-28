@@ -1,81 +1,79 @@
 /**
- * Cinematic Camera Keyframes for Aprilia RS 457 Telemetry Scroll Choreography.
- * Tuned specifically for the Rodin 3D model geometry and scale:
- *   - Ground level at Y = 0.0
- *   - Model center at (0.0, 0.56, 0.0)
- *   - Total length = 2.08m
+ * Cinematic keyframes fitted to the repaired CGC Motorcycle GLB.
+ * Coordinates are in the normalized Three.js frame: +X front, Y up, Z lateral.
+ * The model is 2.08m long and grounded at Y = 0.
  */
 export const cameraKeyframes = [
   {
     id: 'intro',
-    position: [3.30, 0.72, 0.0],
-    target: [0.35, 0.58, 0.0],
-    fov: 33,
+    position: [2.55, 1.22, 2.05],
+    target: [0.0, 0.52, 0.0],
+    fov: 36,
   },
   {
     id: 'engine',
-    position: [1.3, 0.70, 1.3],
-    target: [0.05, 0.45, 0.0],
-    fov: 32,
+    position: [0.0, 0.36, 1.42],
+    target: [-0.02, 0.4, 0.0],
+    fov: 34,
   },
   {
     id: 'frame',
-    position: [-1.4, 1.35, 1.5],
-    target: [0.10, 0.70, 0.10],
-    fov: 34,
+    position: [-0.18, 0.94, 1.28],
+    target: [-0.08, 0.58, 0.02],
+    fov: 32,
   },
   {
     id: 'front-fork',
-    position: [1.8, 0.95, 1.0],
-    target: [0.62, 0.65, 0.05],
-    fov: 32,
-  },
-  {
-    id: 'front-brakes',
-    position: [1.5, 0.42, 0.85],
-    target: [0.72, 0.30, 0.12],
+    position: [1.12, 0.72, 0.98],
+    target: [0.78, 0.48, 0.02],
     fov: 28,
   },
   {
+    id: 'front-brakes',
+    position: [1.02, 0.39, 0.92],
+    target: [0.73, 0.31, 0.14],
+    fov: 24,
+  },
+  {
     id: 'electronics',
-    position: [0.75, 1.45, 1.1],
-    target: [0.48, 0.88, 0.0],
-    fov: 34,
-  },
-  {
-    id: 'winglets',
-    position: [1.4, 0.95, 1.1],
-    target: [0.60, 0.80, 0.22],
-    fov: 30,
-  },
-  {
-    id: 'exhaust',
-    position: [-1.3, 0.55, 1.3],
-    target: [-0.15, 0.26, 0.20],
-    fov: 30,
-  },
-  {
-    id: 'swingarm-shock',
-    position: [-1.5, 0.65, -1.2],
-    target: [-0.40, 0.42, 0.0],
+    position: [0.86, 1.22, 1.18],
+    target: [0.32, 0.84, 0.0],
     fov: 32,
   },
   {
+    id: 'winglets',
+    position: [1.38, 0.98, 1.15],
+    target: [0.88, 0.72, 0.0],
+    fov: 29,
+  },
+  {
+    id: 'exhaust',
+    position: [-0.15, 0.62, 1.28],
+    target: [-0.57, 0.46, 0.0],
+    fov: 28,
+  },
+  {
+    id: 'swingarm-shock',
+    position: [-0.98, 0.82, 1.08],
+    target: [-0.64, 0.55, 0.0],
+    fov: 30,
+  },
+  {
     id: 'wheels',
-    position: [0.0, 0.70, 2.5],
-    target: [0.0, 0.45, 0.0],
+    position: [0.0, 0.68, 2.45],
+    target: [0.0, 0.34, 0.0],
     fov: 38,
   },
   {
     id: 'cockpit',
-    position: [-0.15, 1.38, 0.28],
-    target: [0.35, 0.92, 0.0],
-    fov: 38,
+    position: [0.92, 1.24, 1.02],
+    target: [0.43, 0.92, 0.0],
+    fov: 34,
   },
   {
     id: 'outro',
-    position: [3.4, 1.8, 2.8],
-    target: [0.0, 0.56, 0.0],
-    fov: 42,
+    position: [2.72, 1.72, 2.55],
+    target: [0.0, 0.52, 0.0],
+    fov: 43,
   },
 ];

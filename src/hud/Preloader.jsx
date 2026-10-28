@@ -1,6 +1,6 @@
 /**
  * Preloader.jsx
- * Full-screen boot sequence for Aprilia RS 457 Telemetry System:
+ * Full-screen boot sequence for the RS 457 concept experience:
  *   1. Mono boot log types out line by line
  *   2. RPM arc sweeps to 10,500 redline
  *   3. Hard wipe → reveal when modelReady
@@ -11,13 +11,13 @@ import { MOTORCYCLE_CONFIG } from "../data/motorcycleConfig.js";
 import "./Preloader.css";
 
 const BOOT_LINES = [
-  "INIT RS 457 ECU...",
-  "CHECKING BOSCH 6-AXIS SENSORS...",
-  "LOADING RODIN 3D GEOMETRY...",
-  "MOUNTING PARALLEL-TWIN 457cc ENGINE...",
-  "CALIBRATING DUAL-BEAM CHASSIS...",
-  "BINDING APRC RIDE-BY-WIRE...",
-  "SYNC 5-INCH TFT TELEMETRY...",
+  "INIT CONCEPT TELEMETRY...",
+  "CHECKING VISUAL ASSEMBLIES...",
+  "LOADING CGC SCYTHE GEOMETRY...",
+  "MOUNTING EXTERNAL ENGINE ASSEMBLY...",
+  "CALIBRATING CHASSIS VIEW...",
+  "BINDING INSPECTION CAMERAS...",
+  "SYNCING HUD TELEMETRY...",
   "SYSTEM READY.",
 ];
 
@@ -159,7 +159,7 @@ export default function Preloader() {
         <div className="tach-readout">
           <div className="tach-val">{rpm.toLocaleString()}</div>
           <div className="tach-unit">RPM</div>
-          <div className="tach-sub">RODIN 3D RECONSTRUCTION</div>
+          <div className="tach-sub">CGC SCYTHE VISUAL MODEL</div>
         </div>
       </div>
 

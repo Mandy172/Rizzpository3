@@ -71,17 +71,17 @@ export const ScrollContainer = () => {
         <div className="max-w-3xl pointer-events-auto">
           <div className="flex items-center gap-3 mb-2 font-mono text-xs text-accent tracking-widest uppercase">
             <span className="w-2 h-2 bg-accent inline-block"></span>
-            A2 BENCHMARK // RACE TELEMETRY
+            A2 BENCHMARK // RS 457 TECHNICAL CONCEPT
           </div>
           <h1 className="font-anton text-6xl md:text-8xl tracking-tight text-text uppercase leading-none">
             {MOTORCYCLE_CONFIG.name}
           </h1>
           <div className="font-anton text-3xl md:text-5xl text-accent uppercase tracking-wider mb-4">
-            ANATOMY // PARALLEL-TWIN
+            ANATOMY // PARALLEL-TWIN CONCEPT
           </div>
           <p className="font-mono text-sm text-muted max-w-lg mb-6 leading-relaxed">
-            High-fidelity 3D telemetry blueprint of the 47.6 horsepower Noale supersport.
-            Scroll downward to inspect stage-by-stage chassis architecture.
+            RS 457 technical storytelling paired with the CGC Motorcycle (Scythe) visual model.
+            Scroll to inspect the visible motorcycle assemblies; mesh groupings do not imply internal disassembly.
           </p>
           <div className="inline-flex items-center gap-3 border border-blueprint px-4 py-2 bg-surface font-mono text-xs text-hud animate-pulse">
             <span>SCROLL TO INSPECT ANATOMY</span>
@@ -92,7 +92,7 @@ export const ScrollContainer = () => {
 
       {/* ================= STAGES 1 TO 10: PARTS ================= */}
       {parts.map((part) => {
-        const isCurrent = currentSegIndex === part.index + 1;
+        const isCurrent = currentSegIndex === Number(part.index) + 1;
         return (
           <section
             key={part.id}
@@ -112,7 +112,7 @@ export const ScrollContainer = () => {
               <div className="font-mono text-xs text-muted flex items-center gap-4 border-t border-subtle/50 pt-2 mt-2">
                 <span>TARGET: {part.id.toUpperCase()}</span>
                 <span>•</span>
-                <span className="text-hud font-bold">RODIN 3D MESH</span>
+                <span className="text-hud font-bold">CGC SCYTHE VISUAL MESH</span>
                 <span>•</span>
                 <span>STATUS: NOMINAL</span>
               </div>
@@ -133,23 +133,23 @@ export const ScrollContainer = () => {
             ALL 10 SYSTEMS SYNCHRONIZED // INSPECTION COMPLETE
           </div>
           <h2 className="font-anton text-5xl md:text-7xl text-text uppercase tracking-tight mb-4">
-            RACE SPEC VALIDATED
+            CONCEPT REVIEW COMPLETE
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs border-y border-blueprint py-4 my-6">
             <div>
-              <div className="text-muted text-[10px]">POWER</div>
+              <div className="text-muted text-[10px]">POWER CONCEPT</div>
               <div className="text-accent text-lg font-bold">{MOTORCYCLE_CONFIG.specs.power}</div>
             </div>
             <div>
-              <div className="text-muted text-[10px]">TORQUE</div>
+              <div className="text-muted text-[10px]">TORQUE CONCEPT</div>
               <div className="text-text text-lg font-bold">{MOTORCYCLE_CONFIG.specs.torque}</div>
             </div>
             <div>
-              <div className="text-muted text-[10px]">DISPLACEMENT</div>
+              <div className="text-muted text-[10px]">DISPLACEMENT CONCEPT</div>
               <div className="text-hud text-lg font-bold">{MOTORCYCLE_CONFIG.specs.displacement}</div>
             </div>
             <div>
-              <div className="text-muted text-[10px]">KERB WEIGHT</div>
+              <div className="text-muted text-[10px]">KERB WEIGHT CONCEPT</div>
               <div className="text-text text-lg font-bold">{MOTORCYCLE_CONFIG.specs.kerbWeight}</div>
             </div>
           </div>

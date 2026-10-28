@@ -15,18 +15,16 @@ function easePower3InOut(t) {
 
 // Preset camera positions for 360° Inspection Mode
 const INSPECTION_VIEWS = {
-  default: { pos: [2.8, 1.4, 2.4], target: [0.0, 0.56, 0.0], fov: 40 },
-  front: { pos: [3.30, 0.72, 0.0], target: [0.35, 0.58, 0.0], fov: 33 },
-  side: { pos: [0.0, 0.65, 2.8], target: [0.0, 0.55, 0.0], fov: 38 },
-  rear: { pos: [-2.8, 0.85, 0.0], target: [-0.60, 0.55, 0.0], fov: 36 },
-  engine: { pos: [1.1, 0.65, 1.1], target: [0.05, 0.45, 0.0], fov: 30 },
-  cockpit: { pos: [-0.15, 1.38, 0.28], target: [0.35, 0.92, 0.0], fov: 38 },
+  default: { pos: [2.55, 1.25, 2.1], target: [0.0, 0.52, 0.0], fov: 36 },
+  front: { pos: [1.8, 0.92, 1.55], target: [0.82, 0.68, 0.0], fov: 31 },
+  side: { pos: [0.0, 0.76, 2.55], target: [0.0, 0.54, 0.0], fov: 38 },
+  rear: { pos: [-1.8, 0.98, 1.55], target: [-0.78, 0.56, 0.0], fov: 32 },
+  engine: { pos: [0.0, 0.36, 1.42], target: [-0.02, 0.4, 0.0], fov: 34 },
+  cockpit: { pos: [0.95, 1.28, 1.25], target: [0.42, 0.91, 0.0], fov: 34 },
 };
 
 export const BikeModel = () => {
   // Zustand Store
-  const useOptimizedModel = useScrollStore((s) => s.useOptimizedModel);
-  const setProgress = useScrollStore((s) => s.setProgress);
   const setActivePartId = useScrollStore((s) => s.setActivePartId);
   const setHoveredPart = useScrollStore((s) => s.setHoveredPart);
   const setActivePartScreenPos = useScrollStore((s) => s.setActivePartScreenPos);
@@ -37,9 +35,8 @@ export const BikeModel = () => {
   const inspectionMode = useScrollStore((s) => s.inspectionMode);
   const inspectionView = useScrollStore((s) => s.inspectionView);
 
-  // Load either the exact raw supplied Rodin GLB model or optimized variant
-  const modelUrl = useOptimizedModel ? '/models/rodin-bike-optimized.glb' : '/rodin-bike.glb';
-  const { scene } = useGLTF(modelUrl, true);
+  // Use the same repaired asset in every power mode; low power only changes rendering cost.
+  const { scene } = useGLTF(MOTORCYCLE_CONFIG.modelUrl);
   const { camera, size: viewportSize } = useThree();
 
   const groupRef = useRef();
@@ -62,35 +59,22 @@ export const BikeModel = () => {
   useEffect(() => {
     if (!scene) return;
 
-    // Preserve original materials and textures without destructive transparency
+    // Keep the repaired GLB's PBR values, alpha modes, and glass behavior intact.
     scene.traverse((child) => {
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-
-        if (child.material) {
-          // Keep original base-color texture map
-          const mat = child.material;
-          mat.transparent = false;
-          mat.opacity = 1.0;
-          mat.depthWrite = true;
-          mat.depthTest = true;
-
-          // Provide subtle PBR specular response so studio lighting reveals curves
-          if (mat.roughness !== undefined) mat.roughness = 0.44;
-          if (mat.metalness !== undefined) mat.metalness = 0.28;
-          if (mat.emissive) mat.emissive.set(0x000000);
-
-          mat.needsUpdate = true;
-        }
       }
     });
 
-    console.log(`[RODIN 3D // ${MOTORCYCLE_CONFIG.name}] Model Integrated & Analyzed:`, {
+    console.log(`[3D MODEL // ${MOTORCYCLE_CONFIG.visualModelName}] Loaded:`, {
       source: MOTORCYCLE_CONFIG.geometry.source,
+      meshes: MOTORCYCLE_CONFIG.geometry.meshCount,
+      primitives: MOTORCYCLE_CONFIG.geometry.primitiveCount,
       vertices: MOTORCYCLE_CONFIG.geometry.vertexCount.toLocaleString(),
       triangles: MOTORCYCLE_CONFIG.geometry.triangleCount.toLocaleString(),
-      texture: MOTORCYCLE_CONFIG.geometry.textureResolution,
+      materials: MOTORCYCLE_CONFIG.geometry.materialCount,
+      textures: MOTORCYCLE_CONFIG.geometry.textureResolution,
     });
 
     setModelReady(true);
@@ -100,7 +84,7 @@ export const BikeModel = () => {
   const handlePointerOver = useCallback((e) => {
     e.stopPropagation();
     if (!activePartId) {
-      setHoveredPart('engine');
+      setHoveredPart(getPartIdForMeshName(e.object?.name));
     }
   }, [activePartId, setHoveredPart]);
 
@@ -232,10 +216,7 @@ export const BikeModel = () => {
     }
   });
 
-  // Calculate model matrix offsets (target 2.08m real-world length)
-  const modelScale = 2.08 / 1.1444; // 1.8175
-  const offsetX = 0.104;
-  const offsetZ = 0.067;
+  const { scale: modelScale, position: modelPosition, rotation: modelRotation } = MOTORCYCLE_CONFIG.modelTransform;
 
   return (
     <group
@@ -244,12 +225,12 @@ export const BikeModel = () => {
       onPointerOut={handlePointerOut}
       onClick={handleClick}
     >
-      {/* 3D Model Root: Aligned along +X forward (Math.PI / 2), centered at origin, grounded on Y=0 */}
+      {/* Measured GLB transform: +X forward, Y up, centered at the floor origin. */}
       <group
         ref={modelRootRef}
-        rotation={[0, Math.PI / 2, 0]}
+        rotation={modelRotation}
         scale={[modelScale, modelScale, modelScale]}
-        position={[offsetX, 0, offsetZ]}
+        position={modelPosition}
       >
         <primitive object={scene} />
       </group>
@@ -288,5 +269,4 @@ export const BikeModel = () => {
   );
 };
 
-useGLTF.preload('/rodin-bike.glb');
-useGLTF.preload('/models/rodin-bike-optimized.glb');
+useGLTF.preload(MOTORCYCLE_CONFIG.modelUrl);

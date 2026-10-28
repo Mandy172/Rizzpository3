@@ -1,16 +1,24 @@
 /**
- * Central Motorcycle Configuration: Aprilia RS 457 (MKT R1 Concept)
+ * Central configuration for the RS 457 concept experience and its CGC visual model.
  * Verified against official Aprilia manufacturer specifications:
  * https://www.aprilia.com/en_EN/models/rs-457/
  *
- * Unofficial concept & fan anatomy experience. Not affiliated with Aprilia.
+ * Unofficial concept experience. The CGC asset is a visual reference, not an Aprilia model.
  */
 
 export const MOTORCYCLE_CONFIG = {
   name: 'APRILIA RS 457',
   modelCode: 'RS-457 // FACTORY RACING',
-  tagline: 'ANATOMY OF A PARALLEL-TWIN SUPERSPORT',
-  disclaimer: 'Unofficial fan experience. 3D geometry generated via Rodin neural reconstruction.',
+  visualModelName: 'CGC Motorcycle (Scythe)',
+  tagline: 'RS 457 TECHNICAL CONCEPT // CGC SCYTHE VISUAL MODEL',
+  disclaimer: 'Unofficial RS 457 concept experience. The 3D visual model is CGC Motorcycle (Scythe) by KuhnIndustries; its geometry does not verify RS 457 specifications or internal engine parts.',
+  modelUrl: '/models/cgc-motorcycle.glb',
+  modelTransform: {
+    // GLB bounds measured in Three.js coordinates: X forward, Y up, Z lateral.
+    scale: 0.2956431019,
+    position: [0.3469711791, -0.1581690595, 0.5998879399],
+    rotation: [0, 0, 0],
+  },
   
   // Official RS 457 Performance Specifications
   specs: {
@@ -37,17 +45,24 @@ export const MOTORCYCLE_CONFIG = {
     electronics: 'Ride-by-Wire, 3 Riding Modes (Eco, Rain, Sport), 3-level ATC Traction Control, 5" TFT',
   },
 
-  // 3D Geometry Metadata
+  // Verified geometry metadata for the repaired CGC Motorcycle Phase 1 GLB.
   geometry: {
-    source: 'Rodin Neural 3D Surface Reconstruction',
+    source: 'CGC Motorcycle (Scythe), by KuhnIndustries',
     originalFormat: 'GLB 2.0 (Khronos Blender I/O)',
-    rawFileSize: '59.55 MB',
-    optimizedFileSize: '25.90 MB',
-    vertexCount: 924754,
-    triangleCount: 1499746,
-    textureResolution: '4096 x 4096 PNG Baked Albedo UV map',
-    isSingleMesh: true,
+    fileSizeBytes: 11065080,
+    meshCount: 18,
+    primitiveCount: 41,
+    materialCount: 14,
+    vertexCount: 338741,
+    triangleCount: 428688,
+    textureResolution: 'No image textures; 14 glTF PBR materials',
+    boundsMeters: {
+      length: 2.08,
+      height: 1.09115,
+      width: 0.68277,
+    },
+    isSingleMesh: false,
     hasAnimationClips: false,
-    wheelSeparationSupported: false,
+    wheelSeparationSupported: true,
   },
 };

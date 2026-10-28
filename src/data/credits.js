@@ -1,14 +1,14 @@
 /**
- * Third-party credits for assets used in the RSV4 experience.
- * Update `modelUrl` and `modelAuthor` once a CC-licensed GLB is sourced.
+ * Third-party credits for assets used in the RS 457 concept experience.
  */
 
 export const MODEL_CREDIT = {
-  name: "Aprilia RSV4 3D Model",
-  author: "TBD — source from Sketchfab (CC BY 4.0)",
-  license: "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-  url: "https://sketchfab.com/",
-  note: "Replace with exact Sketchfab URL once model is downloaded and optimised with gltf-transform.",
+  name: "CGC Motorcycle (Scythe)",
+  author: "KuhnIndustries",
+  license: "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 (CC BY-NC-SA 3.0)",
+  url: "http://www.blendswap.com/blends/view/76465",
+  licenseUrl: "https://creativecommons.org/licenses/by-nc-sa/3.0/",
+  note: "Noncommercial license. The supplied license states commercial use requires prior approval from CGCookie.",
 };
 
 export const FONT_CREDIT = {
@@ -25,4 +25,4 @@ export const TEAM = [
 ];
 
 export const DISCLAIMER =
-  "Unofficial fan project. Not affiliated with, endorsed by, or sponsored by Aprilia Racing or Piaggio Group. All trademarks belong to their respective owners.";
+  "Unofficial RS 457 concept experience. The CGC Motorcycle (Scythe) is a visual reference model, not an Aprilia RS 457. Not affiliated with Aprilia Racing or Piaggio Group.";
