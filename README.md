@@ -43,6 +43,10 @@ npm run dev          # http://localhost:5173
 npm run build        # production bundle
 ```
 
+## Arcade Drive Mode (RS 660)
+
+Open `/drive` in the running app, or use the **RS 660 DRIVE** link on the anatomy page. The driving scene expects a model at `public/models/aprilia-rs660.glb`. The [linked Sketchfab model](https://sketchfab.com/3d-models/aprilia-rs-660-2024-9c150ae84c364ffcb09778bec610d17e) is not marked downloadable; obtain its GLB from the creator or an authorized purchase and confirm the license before adding it. Record the creator and license in `src/drive/Drive.jsx` before publishing. Controls: **WASD** or the **arrow keys**.
+
 ---
 
 ## Data Sources & Credits
