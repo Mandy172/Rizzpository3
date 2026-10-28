@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useInRange, STAGES } from './useAnatomy.js';
+import { MOTORCYCLE_CONFIG } from '../data/motorcycleConfig.js';
 
 const STATS = [
-  { to: 217, suf: ' HP', label: 'PEAK POWER' },
-  { to: 65, suf: '° V4', label: 'CYLINDER BANK ANGLE' },
-  { to: 6, suf: '-AXIS IMU', label: 'INERTIAL MEASUREMENT UNIT' },
+  { to: 48, suf: ' HP', label: 'PEAK POWER (35 kW A2 BENCHMARK)' },
+  { to: 270, suf: '° CRANK', label: 'PARALLEL-TWIN 457cc ARCHITECTURE' },
+  { to: 175, suf: ' KG', label: 'KERB WEIGHT (90% FUEL LOAD)' },
 ];
 
 export default function StatSection() {

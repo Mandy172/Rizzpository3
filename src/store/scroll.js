@@ -12,6 +12,9 @@ export const useScrollStore = create((set) => ({
   muted: false,
   lowPower: false,
   isTouch: false,
+  inspectionMode: false,
+  inspectionView: 'default', // 'default' | 'front' | 'side' | 'rear' | 'engine' | 'cockpit'
+  useOptimizedModel: false,
 
   setProgress: (progress) => set({ progress, scrollProgress: progress }),
   setScrollProgress: (scrollProgress) => set({ progress: scrollProgress, scrollProgress }),
@@ -25,6 +28,11 @@ export const useScrollStore = create((set) => ({
   toggleMuted: () => set((state) => ({ muted: !state.muted })),
   setLowPower: (lowPower) => set((state) => ({ lowPower: typeof lowPower === 'function' ? lowPower(state.lowPower) : lowPower })),
   setIsTouch: (isTouch) => set({ isTouch }),
+  setInspectionMode: (inspectionMode) => set((state) => ({ inspectionMode: typeof inspectionMode === 'function' ? inspectionMode(state.inspectionMode) : inspectionMode })),
+  toggleInspectionMode: () => set((state) => ({ inspectionMode: !state.inspectionMode })),
+  setInspectionView: (inspectionView) => set({ inspectionView }),
+  setUseOptimizedModel: (useOptimizedModel) => set((state) => ({ useOptimizedModel: typeof useOptimizedModel === 'function' ? useOptimizedModel(state.useOptimizedModel) : useOptimizedModel })),
+  toggleOptimizedModel: () => set((state) => ({ useOptimizedModel: !state.useOptimizedModel })),
 }));
 
 export const useStore = useScrollStore;

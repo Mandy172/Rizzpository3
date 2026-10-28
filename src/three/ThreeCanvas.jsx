@@ -12,7 +12,7 @@ export const ThreeCanvas = () => {
   return (
     <div className="fixed inset-0 z-0 w-full h-full pointer-events-auto bg-bg">
       <Canvas
-        camera={{ position: [2.8, 1.4, 2.8], fov: 42 }}
+        camera={{ position: [3.30, 0.72, 0.0], fov: 33 }}
         dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 1.75)}
         gl={{
           antialias: true,

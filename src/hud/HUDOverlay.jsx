@@ -1,6 +1,7 @@
 import React from 'react';
 import { useScrollStore } from '../store/scroll.js';
 import { parts } from '../data/parts.js';
+import { MOTORCYCLE_CONFIG } from '../data/motorcycleConfig.js';
 
 export const HUDOverlay = () => {
   const activePartId = useScrollStore((s) => s.activePartId);
@@ -12,34 +13,87 @@ export const HUDOverlay = () => {
   const setLowPower = useScrollStore((s) => s.setLowPower);
   const muted = useScrollStore((s) => s.muted);
   const setMuted = useScrollStore((s) => s.setMuted);
+  const inspectionMode = useScrollStore((s) => s.inspectionMode);
+  const toggleInspectionMode = useScrollStore((s) => s.toggleInspectionMode);
+  const inspectionView = useScrollStore((s) => s.inspectionView);
+  const setInspectionView = useScrollStore((s) => s.setInspectionView);
+  const useOptimizedModel = useScrollStore((s) => s.useOptimizedModel);
+  const toggleOptimizedModel = useScrollStore((s) => s.toggleOptimizedModel);
 
   const activePart = parts.find((p) => p.id === activePartId);
 
-  // Dynamic telemetry math based on scroll progress
-  const rpm = Math.round(1500 + progress * 11500);
-  const speed = Math.round(progress * 305);
-  const gear = progress < 0.1 ? 'N' : progress < 0.25 ? '1' : progress < 0.4 ? '2' : progress < 0.6 ? '3' : progress < 0.8 ? '4' : progress < 0.95 ? '5' : '6';
-  const leanAngle = Math.sin(progress * Math.PI * 4) * 48;
+  // Dynamic telemetry math calibrated for Aprilia RS 457 (10,500 RPM max, 185 km/h top speed)
+  const rpm = Math.round(MOTORCYCLE_CONFIG.specs.idleRpm + progress * (MOTORCYCLE_CONFIG.specs.maxRpm - MOTORCYCLE_CONFIG.specs.idleRpm));
+  const speed = Math.round(progress * 185);
+  const gear = progress < 0.08 ? 'N' : progress < 0.22 ? '1' : progress < 0.4 ? '2' : progress < 0.6 ? '3' : progress < 0.8 ? '4' : progress < 0.95 ? '5' : '6';
+  const leanAngle = Math.sin(progress * Math.PI * 4) * 44;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-10 flex flex-col justify-between p-6 select-none">
       
       {/* ================= HEADER BAR ================= */}
-      <header className="flex items-start justify-between border-b border-subtle pb-4 pointer-events-auto">
+      <header className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-subtle pb-4 pointer-events-auto gap-4">
         <div className="flex flex-col">
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 bg-accent inline-block animate-pulse"></span>
             <span className="font-anton text-2xl tracking-wider text-text uppercase">
-              APRILIA RSV4 // FACTORY 1100
+              {MOTORCYCLE_CONFIG.name} // PARALLEL-TWIN RACING
             </span>
           </div>
           <span className="font-mono text-xs text-muted tracking-widest mt-1">
-            ANATOMY TELEMETRY SYSTEM // REV.2026.4
+            ANATOMY TELEMETRY SYSTEM // RS 457 CHASSIS SPEC
           </span>
         </div>
 
-        {/* Global HUD Quick Controls */}
-        <div className="flex items-center gap-4">
+        {/* Global HUD Quick Controls & 360° Inspection Toolbar */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* 360° Inspection Mode Toggle */}
+          <button
+            onClick={toggleInspectionMode}
+            className={`font-mono text-xs px-3 py-1.5 border transition-colors ${
+              inspectionMode
+                ? 'bg-accent text-white font-bold border-accent shadow-lg shadow-accent/20'
+                : 'bg-surface text-text border-blueprint hover:border-accent'
+            }`}
+          >
+            {inspectionMode ? '✦ 360° INSPECT ACTIVE' : 'INSPECT 360°'}
+          </button>
+
+          {/* Quick Camera Angle Buttons in Inspection Mode */}
+          {inspectionMode && (
+            <div className="flex items-center gap-1 bg-surface border border-blueprint p-1">
+              {[
+                { id: 'default', label: 'HERO' },
+                { id: 'engine', label: 'ENGINE' },
+                { id: 'front', label: 'FRONT' },
+                { id: 'side', label: 'SIDE' },
+                { id: 'cockpit', label: 'COCKPIT' },
+                { id: 'rear', label: 'REAR' },
+              ].map((btn) => (
+                <button
+                  key={btn.id}
+                  onClick={() => setInspectionView(btn.id)}
+                  className={`font-mono text-[10px] px-2 py-1 transition-colors ${
+                    inspectionView === btn.id ? 'bg-hud text-bg font-bold' : 'text-muted hover:text-text'
+                  }`}
+                >
+                  {btn.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Model Geometry Resolution Toggle */}
+          <button
+            onClick={toggleOptimizedModel}
+            title={useOptimizedModel ? 'Currently using 26MB optimized mesh. Click for 60MB raw.' : 'Currently using 60MB raw mesh. Click for 26MB optimized.'}
+            className={`font-mono text-xs px-3 py-1.5 border border-blueprint transition-colors ${
+              useOptimizedModel ? 'bg-hud text-bg font-bold' : 'bg-surface text-text hover:border-accent'
+            }`}
+          >
+            GLB: {useOptimizedModel ? 'OPT 26MB' : 'RAW 60MB'}
+          </button>
+
           {/* Low Power Toggle */}
           <button
             onClick={() => setLowPower((prev) => !prev)}
@@ -72,12 +126,12 @@ export const HUDOverlay = () => {
         <svg className="fixed inset-0 pointer-events-none w-full h-full z-20 overflow-visible">
           {/* Pulsing Target Reticle at active part 3D coordinate */}
           <g transform={`translate(${activePartScreenPos.x}, ${activePartScreenPos.y})`}>
-            <circle r="16" fill="none" stroke="#e10600" strokeWidth="1" strokeDasharray="4 2" />
+            <circle r="18" fill="none" stroke="#e10600" strokeWidth="1" strokeDasharray="4 2" />
             <circle r="4" fill="#e10600" />
-            <line x1="-24" y1="0" x2="-8" y2="0" stroke="#e10600" strokeWidth="1" />
-            <line x1="8" y1="0" x2="24" y2="0" stroke="#e10600" strokeWidth="1" />
-            <line x1="0" y1="-24" x2="0" y2="-8" stroke="#e10600" strokeWidth="1" />
-            <line x1="0" y1="8" x2="0" y2="24" stroke="#e10600" strokeWidth="1" />
+            <line x1="-26" y1="0" x2="-8" y2="0" stroke="#e10600" strokeWidth="1" />
+            <line x1="8" y1="0" x2="26" y2="0" stroke="#e10600" strokeWidth="1" />
+            <line x1="0" y1="-26" x2="0" y2="-8" stroke="#e10600" strokeWidth="1" />
+            <line x1="0" y1="8" x2="0" y2="26" stroke="#e10600" strokeWidth="1" />
           </g>
 
           {/* Hard angled technical leader line from crosshair to right-hand info panel */}
@@ -100,7 +154,7 @@ export const HUDOverlay = () => {
         <aside
           className="fixed right-8 top-1/2 -translate-y-1/2 w-80 bg-surface border border-blueprint p-5 pointer-events-auto z-30"
           style={{
-            boxShadow: '0 0 20px rgba(0,0,0,0.8)',
+            boxShadow: '0 0 24px rgba(0,0,0,0.85)',
           }}
         >
           <div className="flex items-center justify-between border-b border-subtle pb-2 mb-3">
@@ -122,8 +176,8 @@ export const HUDOverlay = () => {
               <span className="text-text font-bold uppercase">{activePart.id}</span>
             </div>
             <div className="flex justify-between border-b border-subtle/50 pb-1 font-mono text-xs">
-              <span className="text-muted">SPEC STATUS:</span>
-              <span className="text-hud font-bold">RACE-READY</span>
+              <span className="text-muted">POWER RATIO:</span>
+              <span className="text-hud font-bold">0.27 HP/KG</span>
             </div>
             <div className="flex justify-between border-b border-subtle/50 pb-1 font-mono text-xs">
               <span className="text-muted">CALIBRATION:</span>
@@ -136,16 +190,16 @@ export const HUDOverlay = () => {
             <p className="text-text font-bold mb-1 text-[11px] uppercase tracking-wider text-accent">
               ENGINEERING NOTE:
             </p>
-            {activePart.id === 'engine' && '65° V4 powerplant with inverted valve timing, churning 217 HP at 13,000 RPM.'}
-            {activePart.id === 'frame' && 'Polished dual-beam perimeter frame with adjustable swingarm pivot and steering headstock.'}
-            {activePart.id === 'front-fork' && 'Öhlins Smart EC 2.0 semi-active electronic suspension adapting to braking loads in real-time.'}
-            {activePart.id === 'front-brakes' && 'Brembo Stylema monobloc 4-piston radial calipers clamping 330mm floating steel rotors.'}
-            {activePart.id === 'electronics' && 'APRC 6-axis IMU managing traction, wheelie, launch, and engine brake controls.'}
-            {activePart.id === 'winglets' && 'MotoGP-derived carbon downforce aerofoils generating 8kg load at 300 km/h.'}
-            {activePart.id === 'exhaust' && 'Titanium 4-into-2-into-1 Akrapovič racing headers with carbon heat shielding.'}
-            {activePart.id === 'swingarm-shock' && 'Under-slung inverted alloy swingarm linked to an Öhlins TTX36 gas-charged shock.'}
-            {activePart.id === 'wheels' && 'Forged ultra-lightweight magnesium alloy wheels wrapped in Pirelli Supercorsa SP slicks.'}
-            {activePart.id === 'cockpit' && 'High-contrast optical TFT digital telemetry instrument cluster with race shift lights.'}
+            {activePart.id === 'engine' && 'Liquid-cooled 457cc parallel twin with 270° crank, delivering 47.6 HP @ 9,400 RPM with A2 class-leading power-to-weight.'}
+            {activePart.id === 'frame' && 'Dual-beam aluminium perimeter chassis integrating the forward-canted engine as a stressed structural member.'}
+            {activePart.id === 'front-fork' && '41mm upside-down (USD) front forks with 120mm travel and preload adjustability.'}
+            {activePart.id === 'front-brakes' && '320mm floating steel disc clamped by ByBre radial 4-piston caliper with Bosch dual-channel ABS.'}
+            {activePart.id === 'electronics' && 'APRC electronic suite with Ride-by-Wire, 3 Riding Modes (Eco, Rain, Sport), and 3-level Traction Control.'}
+            {activePart.id === 'winglets' && 'MotoGP-derived double front fairing with internal aerodynamic ducts to optimize airflow stability.'}
+            {activePart.id === 'exhaust' && '2-into-1 low-slung underbelly silencer centralizing mass and projecting the 270° twin rumble.'}
+            {activePart.id === 'swingarm-shock' && 'Asymmetric high-rigidity swingarm with progressive monoshock and 130mm wheel travel.'}
+            {activePart.id === 'wheels' && '17-inch multi-spoke sport alloy rims wrapped in 110/70 and 150/60 sport radial tyres with Aprilia red rim tape.'}
+            {activePart.id === 'cockpit' && '5-inch full-color TFT optical dashboard with illuminated handlebar switchgear and clip-ons.'}
           </div>
         </aside>
       )}
@@ -154,9 +208,9 @@ export const HUDOverlay = () => {
       {hoveredPart && (
         <div className="fixed left-8 bottom-28 bg-surface border border-accent px-4 py-2 pointer-events-auto z-30 font-mono text-xs flex items-center gap-3">
           <span className="w-2 h-2 bg-hud animate-ping"></span>
-          <span className="text-muted uppercase">RAYCAST TARGET:</span>
+          <span className="text-muted uppercase">HOTSPOT TARGET:</span>
           <span className="text-text font-bold uppercase">{hoveredPart}</span>
-          <span className="text-hud text-[10px]">[CLICK TO INSPECT]</span>
+          <span className="text-hud text-[10px]">[TELEMETRY LOCK]</span>
         </div>
       )}
 
@@ -192,9 +246,9 @@ export const HUDOverlay = () => {
 
         {/* Legal Disclaimer & Attribution */}
         <div className="font-mono text-[11px] text-muted text-center md:text-right">
-          <div>Unofficial fan project. Not affiliated with Aprilia.</div>
+          <div>{MOTORCYCLE_CONFIG.disclaimer}</div>
           <div className="text-[10px] text-muted/70">
-            3D Model & Architecture by Sujay • Aprilia RSV4 Anatomy Hackathon
+            {MOTORCYCLE_CONFIG.name} Concept Experience • Rodin 3D Model Integration
           </div>
         </div>
       </footer>

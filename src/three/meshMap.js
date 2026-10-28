@@ -1,106 +1,50 @@
-/**
- * Maps each part ID from src/data/parts.js to the corresponding 3D mesh names
- * and component prefixes in public/bike.glb.
- */
-export const partPrefixes = {
-  'engine': [
-    'crankcase',
-    'cylinder-block',
-    'cylinder-head',
-    'gearbox',
-    'carburetor',
-    'air-filter',
-    'case-bolt-1',
-    'case-bolt-2',
-    'case-bolt-3',
-    'case-bolt-4',
-    'case-bolt-5',
-    'case-bolt-6',
-    'case-bolt-7',
-    'case-bolt-8',
-  ],
-  'frame': [
-    'main-frame',
-    'fuel-tank',
-    'fuel-cap',
-    'seat',
-    'tail-cowl',
-    'rear-fender',
-    'left-footpeg',
-    'right-footpeg',
-  ],
-  'front-fork': [
-    'left-fork',
-    'right-fork',
-    'front-axle',
-    'front-fender',
-  ],
-  'front-brakes': [
-    'front-disc',
-    'front-caliper',
-    'brake-lever',
-  ],
-  'electronics': [
-    'battery',
-    'headlight',
-    'tail-light',
-    'left-indicator',
-    'right-indicator',
-  ],
-  'winglets': [
-    'winglet_left_upper',
-    'winglet_left_lower',
-    'winglet_right_upper',
-    'winglet_right_lower',
-    'winglets',
-  ],
-  'exhaust': [
-    'exhaust-header',
-    'silencer',
-  ],
-  'swingarm-shock': [
-    'swingarm',
-    'left-shock',
-    'right-shock',
-    'drive-chain',
-    'rear-sprocket',
-    'rear-axle',
-    'rear-disc',
-    'rear-caliper',
-  ],
-  'wheels': [
-    'front-tire',
-    'front-rim',
-    'rear-tire',
-    'rear-rim',
-  ],
-  'cockpit': [
-    'handlebar',
-    'left-grip',
-    'right-grip',
-    'clutch-lever',
-    'left-mirror',
-    'right-mirror',
-    'speedometer',
-  ],
-};
+import * as THREE from 'three';
 
 /**
- * Returns the part ID for a given mesh or node name
+ * Maps each anatomy part ID from src/data/parts.js to its exact 3D coordinates
+ * and telemetry anchor point on the Aprilia RS 457 Rodin model.
+ *
+ * Coordinates are in the transformed model world-space (meters):
+ *   +X: Front
+ *   -X: Rear
+ *   +Y: Up (Ground = 0.0)
+ *   ±Z: Left / Right
  */
+export const partHotspots = {
+  'engine': new THREE.Vector3(0.05, 0.45, 0.0),
+  'frame': new THREE.Vector3(0.10, 0.72, 0.15),
+  'front-fork': new THREE.Vector3(0.62, 0.65, 0.08),
+  'front-brakes': new THREE.Vector3(0.72, 0.30, 0.12),
+  'electronics': new THREE.Vector3(0.48, 0.88, 0.0),
+  'winglets': new THREE.Vector3(0.60, 0.80, 0.28),
+  'exhaust': new THREE.Vector3(-0.15, 0.26, 0.22),
+  'swingarm-shock': new THREE.Vector3(-0.40, 0.42, 0.0),
+  'wheels': new THREE.Vector3(0.72, 0.30, 0.0),
+  'cockpit': new THREE.Vector3(0.32, 0.98, 0.0),
+};
+
+export const partPrefixes = {
+  'engine': ['engine', 'crankcase', 'cylinder', 'gearbox', 'clutch'],
+  'frame': ['frame', 'tank', 'seat', 'subframe', 'footpeg'],
+  'front-fork': ['fork', 'stanchion', 'triple_clamp', 'fender'],
+  'front-brakes': ['front-disc', 'front-caliper', 'brake-lever'],
+  'electronics': ['electronics', 'battery', 'headlight', 'tail-light', 'drl'],
+  'winglets': ['winglet', 'aero', 'fairing', 'duct'],
+  'exhaust': ['exhaust', 'header', 'silencer', 'collector'],
+  'swingarm-shock': ['swingarm', 'shock', 'chain', 'sprocket'],
+  'wheels': ['wheel', 'tire', 'rim'],
+  'cockpit': ['cockpit', 'handlebar', 'grip', 'speedometer', 'tft', 'mirror'],
+};
+
 export function getPartIdForMeshName(name) {
   if (!name) return null;
+  const lower = name.toLowerCase();
   for (const [partId, prefixes] of Object.entries(partPrefixes)) {
     for (const prefix of prefixes) {
-      if (name.startsWith(prefix) || name.includes(prefix)) {
+      if (lower.includes(prefix)) {
         return partId;
       }
     }
   }
   return null;
 }
-
-export const meshMap = partPrefixes;
-export const meshToPartMap = new Proxy({}, {
-  get: (_, prop) => getPartIdForMeshName(prop),
-});

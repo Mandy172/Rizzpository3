@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useStore, useInRange, STAGES } from './useAnatomy.js';
+import { MOTORCYCLE_CONFIG } from '../data/motorcycleConfig.js';
 
 const Line = ({ children, out }) => (
   <span className="mask"><span className={out ? 'out' : undefined}>{children}</span></span>
@@ -22,20 +23,20 @@ export default function Hero() {
   return (
     <section ref={root} className={`hero ${on ? 'is-on' : ''}`}>
       <div>
-        <h1 className="hero__h"><Line>APRILIA</Line><Line out>RSV4</Line></h1>
-        <p className="hero__sub"><Line>ANATOMY OF A SUPERBIKE</Line></p>
+        <h1 className="hero__h"><Line>APRILIA</Line><Line out>RS 457</Line></h1>
+        <p className="hero__sub"><Line>{MOTORCYCLE_CONFIG.tagline}</Line></p>
       </div>
       <div className="hero__bot">
         <div className="hero__scroll">
-          <span className="out">SCROLL TO DISASSEMBLE</span>
+          <span className="out">SCROLL TO INSPECT ANATOMY</span>
           <svg className="arrow" viewBox="0 0 24 40" width="22" height="36" aria-hidden="true">
             <path d="M12 0v36M2 26l10 12 10-12" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" />
           </svg>
         </div>
         <ul className="chips">
-          <li className="chip"><b>217</b> HP</li>
-          <li className="chip"><b>1,099</b> CC</li>
-          <li className="chip"><b>V4</b></li>
+          <li className="chip"><b>47.6</b> HP</li>
+          <li className="chip"><b>457</b> CC</li>
+          <li className="chip"><b>TWIN</b></li>
         </ul>
       </div>
     </section>

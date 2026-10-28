@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useScrollStore } from '../store/scroll.js';
 import { parts } from '../data/parts.js';
+import { MOTORCYCLE_CONFIG } from '../data/motorcycleConfig.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,11 +13,12 @@ export const ScrollContainer = () => {
   const setProgress = useScrollStore((s) => s.setProgress);
   const setScrollVelocity = useScrollStore((s) => s.setScrollVelocity);
   const progress = useScrollStore((s) => s.progress);
+  const inspectionMode = useScrollStore((s) => s.inspectionMode);
 
   const totalSegments = 12;
   const currentSegIndex = Math.min(Math.floor(Math.max(0, progress) * totalSegments), totalSegments - 1);
 
-  // 3. Smooth scroll: Lenis wired to GSAP ScrollTrigger
+  // Smooth scroll: Lenis wired to GSAP ScrollTrigger
   useEffect(() => {
     const lenis = new Lenis({
       lerp: 0.08,
@@ -50,6 +52,10 @@ export const ScrollContainer = () => {
   // Total height: (parts.length + 2) * 100vh = 1200vh
   const totalHeight = `${(parts.length + 2) * 100}vh`;
 
+  if (inspectionMode) {
+    return null;
+  }
+
   return (
     <div
       ref={containerRef}
@@ -65,20 +71,20 @@ export const ScrollContainer = () => {
         <div className="max-w-3xl pointer-events-auto">
           <div className="flex items-center gap-3 mb-2 font-mono text-xs text-accent tracking-widest uppercase">
             <span className="w-2 h-2 bg-accent inline-block"></span>
-            NO COMPROMISE // RACE TELEMETRY
+            A2 BENCHMARK // RACE TELEMETRY
           </div>
           <h1 className="font-anton text-6xl md:text-8xl tracking-tight text-text uppercase leading-none">
-            APRILIA RSV4
+            {MOTORCYCLE_CONFIG.name}
           </h1>
           <div className="font-anton text-3xl md:text-5xl text-accent uppercase tracking-wider mb-4">
-            ANATOMY // FACTORY 1100
+            ANATOMY // PARALLEL-TWIN
           </div>
           <p className="font-mono text-sm text-muted max-w-lg mb-6 leading-relaxed">
-            Exploded technical blueprint of the 217 horsepower Noale superbike.
-            Scroll downward to initiate stage-by-stage mechanical disassembly.
+            High-fidelity 3D telemetry blueprint of the 47.6 horsepower Noale supersport.
+            Scroll downward to inspect stage-by-stage chassis architecture.
           </p>
           <div className="inline-flex items-center gap-3 border border-blueprint px-4 py-2 bg-surface font-mono text-xs text-hud animate-pulse">
-            <span>SCROLL TO DISASSEMBLE</span>
+            <span>SCROLL TO INSPECT ANATOMY</span>
             <span>▼</span>
           </div>
         </div>
@@ -104,11 +110,11 @@ export const ScrollContainer = () => {
                 {part.name}
               </h2>
               <div className="font-mono text-xs text-muted flex items-center gap-4 border-t border-subtle/50 pt-2 mt-2">
-                <span>EXPLODE STATE: ACTIVE</span>
+                <span>TARGET: {part.id.toUpperCase()}</span>
                 <span>•</span>
-                <span className="text-hud font-bold">GSAP SCRUBBED</span>
+                <span className="text-hud font-bold">RODIN 3D MESH</span>
                 <span>•</span>
-                <span>SYSTEM: {part.id.toUpperCase()}</span>
+                <span>STATUS: NOMINAL</span>
               </div>
             </div>
           </section>
@@ -124,7 +130,7 @@ export const ScrollContainer = () => {
         <div className="max-w-2xl pointer-events-auto bg-surface/95 border border-blueprint p-8 shadow-2xl">
           <div className="flex items-center justify-center gap-2 font-mono text-xs text-hud tracking-widest uppercase mb-3">
             <span className="w-2 h-2 bg-hud animate-ping"></span>
-            ALL 10 SYSTEMS SYNCHRONIZED // REASSEMBLY COMPLETE
+            ALL 10 SYSTEMS SYNCHRONIZED // INSPECTION COMPLETE
           </div>
           <h2 className="font-anton text-5xl md:text-7xl text-text uppercase tracking-tight mb-4">
             RACE SPEC VALIDATED
@@ -132,23 +138,23 @@ export const ScrollContainer = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs border-y border-blueprint py-4 my-6">
             <div>
               <div className="text-muted text-[10px]">POWER</div>
-              <div className="text-accent text-lg font-bold">217 HP</div>
+              <div className="text-accent text-lg font-bold">{MOTORCYCLE_CONFIG.specs.power}</div>
             </div>
             <div>
               <div className="text-muted text-[10px]">TORQUE</div>
-              <div className="text-text text-lg font-bold">125 NM</div>
+              <div className="text-text text-lg font-bold">{MOTORCYCLE_CONFIG.specs.torque}</div>
             </div>
             <div>
               <div className="text-muted text-[10px]">DISPLACEMENT</div>
-              <div className="text-hud text-lg font-bold">1,099 CC</div>
+              <div className="text-hud text-lg font-bold">{MOTORCYCLE_CONFIG.specs.displacement}</div>
             </div>
             <div>
-              <div className="text-muted text-[10px]">WEIGHT</div>
-              <div className="text-text text-lg font-bold">199 KG</div>
+              <div className="text-muted text-[10px]">KERB WEIGHT</div>
+              <div className="text-text text-lg font-bold">{MOTORCYCLE_CONFIG.specs.kerbWeight}</div>
             </div>
           </div>
           <p className="font-mono text-xs text-muted max-w-md mx-auto leading-relaxed">
-            Scroll back up to inspect individual sub-assemblies, or click any component directly on the 3D model canvas.
+            Scroll back up to review individual sub-assemblies, or switch to 360° Inspect mode in the top HUD.
           </p>
         </div>
       </section>

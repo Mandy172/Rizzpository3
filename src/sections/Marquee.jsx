@@ -1,6 +1,6 @@
 import { useInRange, STAGES } from './useAnatomy.js';
 
-const TXT = 'BUILT TO BE TAKEN APART // RACE BRED // V4 // '.repeat(4);
+const TXT = 'BUILT TO BE TAKEN APART // RACE BRED // PARALLEL-TWIN 457 // '.repeat(4);
 const Row = ({ cls, rev }) => (
   <div className={`mq__row ${cls}`}>
     <div className={`mq__track ${rev ? 'rev' : ''}`}><span>{TXT}</span><span aria-hidden="true">{TXT}</span></div>

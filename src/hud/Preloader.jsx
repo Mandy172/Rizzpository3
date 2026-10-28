@@ -1,26 +1,27 @@
 /**
  * Preloader.jsx
- * Full-screen boot sequence:
+ * Full-screen boot sequence for Aprilia RS 457 Telemetry System:
  *   1. Mono boot log types out line by line
- *   2. RPM arc sweeps to 13,000 redline
+ *   2. RPM arc sweeps to 10,500 redline
  *   3. Hard wipe → reveal when modelReady
  */
 import { useEffect, useRef, useState } from "react";
 import { useScrollStore } from "../store/scroll.js";
+import { MOTORCYCLE_CONFIG } from "../data/motorcycleConfig.js";
 import "./Preloader.css";
 
 const BOOT_LINES = [
-  "INIT ECU...",
-  "CHECKING SENSORS...",
-  "LOADING FRAME.GLB",
-  "CALIBRATING IMU...",
-  "MOUNTING V4 ENGINE...",
-  "BINDING APRC SUITE...",
-  "SYNC 6-AXIS PLATFORM...",
+  "INIT RS 457 ECU...",
+  "CHECKING BOSCH 6-AXIS SENSORS...",
+  "LOADING RODIN 3D GEOMETRY...",
+  "MOUNTING PARALLEL-TWIN 457cc ENGINE...",
+  "CALIBRATING DUAL-BEAM CHASSIS...",
+  "BINDING APRC RIDE-BY-WIRE...",
+  "SYNC 5-INCH TFT TELEMETRY...",
   "SYSTEM READY.",
 ];
 
-const REDLINE = 13000;
+const REDLINE = MOTORCYCLE_CONFIG.specs.maxRpm; // 10,500 RPM
 const ARC_RADIUS = 110;
 const ARC_CENTER = 150;
 const ARC_START_DEG = 135;
@@ -62,23 +63,22 @@ export default function Preloader() {
       } else {
         clearInterval(interval);
       }
-    }, 340);
+    }, 280);
     return () => clearInterval(interval);
   }, []);
 
   // RPM sweep animation
   useEffect(() => {
     let start = null;
-    const duration = 2800;
+    const duration = 2400;
     const raf = (ts) => {
       if (!start) start = ts;
       const t = Math.min((ts - start) / duration, 1);
-      // ease-out-cubic
       const eased = 1 - Math.pow(1 - t, 3);
       setRpm(Math.round(eased * REDLINE));
       if (t < 1) requestAnimationFrame(raf);
     };
-    const id = setTimeout(() => requestAnimationFrame(raf), 600);
+    const id = setTimeout(() => requestAnimationFrame(raf), 400);
     return () => clearTimeout(id);
   }, []);
 
@@ -92,11 +92,11 @@ export default function Preloader() {
     }
   }, [muted]);
 
-  // Wipe when model ready, with fallback if model takes > 3.8s
+  // Wipe when model ready, with fallback timer
   useEffect(() => {
     const fallbackTimer = setTimeout(() => {
       useScrollStore.getState().setModelReady(true);
-    }, 3800);
+    }, 4500);
     return () => clearTimeout(fallbackTimer);
   }, []);
 
@@ -113,104 +113,70 @@ export default function Preloader() {
   const rpmFraction = rpm / REDLINE;
   const sweepEnd = ARC_START_DEG + ARC_SWEEP_DEG * rpmFraction;
   const redlineStart = ARC_START_DEG + ARC_SWEEP_DEG * 0.85;
-  const circumference = 2 * Math.PI * ARC_RADIUS;
 
-  // Build SVG paths
   const trackPath = arcPath(ARC_CENTER, ARC_CENTER, ARC_RADIUS, ARC_START_DEG, ARC_START_DEG + ARC_SWEEP_DEG);
-  const activePath = rpmFraction > 0
-    ? arcPath(ARC_CENTER, ARC_CENTER, ARC_RADIUS, ARC_START_DEG, Math.min(sweepEnd, ARC_START_DEG + ARC_SWEEP_DEG))
-    : null;
-  const redlinePath = arcPath(ARC_CENTER, ARC_CENTER, ARC_RADIUS, redlineStart, ARC_START_DEG + ARC_SWEEP_DEG);
-  const needlePos = polarToXY(ARC_CENTER, ARC_CENTER, ARC_RADIUS, Math.min(sweepEnd, ARC_START_DEG + ARC_SWEEP_DEG));
-
-  const isRedline = rpm >= REDLINE * 0.85;
+  const activePath = rpmFraction > 0 ? arcPath(ARC_CENTER, ARC_CENTER, ARC_RADIUS, ARC_START_DEG, sweepEnd) : "";
 
   return (
-    <div className={`preloader ${wiping ? "preloader--wipe" : ""}`}>
-      {/* Audio element — /public/engine-start.mp3 */}
+    <div className={`preloader ${wiping ? "is-wiping" : ""}`} role="dialog" aria-modal="true" aria-label="Loading experience">
       <audio ref={audioRef} src="/engine-start.wav" preload="auto" />
 
-      {/* Mute toggle */}
-      <button className="preloader__mute" onClick={toggleMuted} aria-label="Toggle sound">
-        {muted ? "[ SOUND OFF ]" : "[ SOUND ON ]"}
-      </button>
+      {/* Grid texture overlay */}
+      <div className="preloader__grid" aria-hidden="true" />
 
-      {/* RPM gauge */}
-      <div className="preloader__gauge">
-        <svg viewBox={`0 0 ${ARC_CENTER * 2} ${ARC_CENTER * 2}`} width="300" height="300">
-          {/* Track */}
-          <path d={trackPath} fill="none" stroke="#1a1a1a" strokeWidth="8" strokeLinecap="round" />
-          {/* Redline zone */}
-          <path d={redlinePath} fill="none" stroke="#ff2200" strokeWidth="8" strokeLinecap="round" opacity="0.35" />
-          {/* Active arc */}
-          {activePath && (
-            <path
-              d={activePath}
-              fill="none"
-              stroke={isRedline ? "#ff2200" : "#d4ff00"}
-              strokeWidth="8"
-              strokeLinecap="round"
-            />
-          )}
-          {/* Needle dot */}
-          {rpmFraction > 0 && (
-            <circle cx={needlePos.x} cy={needlePos.y} r="5" fill={isRedline ? "#ff2200" : "#d4ff00"} />
-          )}
-          {/* Center RPM readout */}
-          <text
-            x={ARC_CENTER}
-            y={ARC_CENTER - 8}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill={isRedline ? "#ff2200" : "#d4ff00"}
-            fontFamily="'JetBrains Mono', monospace"
-            fontSize="26"
-            fontWeight="700"
-            letterSpacing="2"
-          >
-            {rpm.toLocaleString()}
-          </text>
-          <text
-            x={ARC_CENTER}
-            y={ARC_CENTER + 22}
-            textAnchor="middle"
-            fill="#555"
-            fontFamily="'JetBrains Mono', monospace"
-            fontSize="10"
-            letterSpacing="3"
-          >
-            RPM
-          </text>
-          {/* Redline label */}
-          <text
-            x={ARC_CENTER}
-            y={ARC_CENTER + 48}
-            textAnchor="middle"
-            fill="#ff2200"
-            fontFamily="'JetBrains Mono', monospace"
-            fontSize="9"
-            letterSpacing="2"
-          >
-            REDLINE 13,000
-          </text>
+      {/* Top brand header */}
+      <header className="preloader__head">
+        <div className="preloader__logo">
+          <span className="dot" />
+          <span className="brand">{MOTORCYCLE_CONFIG.name}</span>
+          <span className="tag">TELEMETRY // BOOT</span>
+        </div>
+        <button
+          type="button"
+          className="preloader__mute"
+          onClick={toggleMuted}
+          aria-label={muted ? "Unmute audio" : "Mute audio"}
+        >
+          [{muted ? "SOUND: OFF" : "SOUND: ON"}]
+        </button>
+      </header>
+
+      {/* Center Tachometer Arc */}
+      <div className="preloader__tach">
+        <svg viewBox="0 0 300 300" className="tach-svg" aria-hidden="true">
+          <path d={trackPath} className="tach-track" />
+          {activePath && <path d={activePath} className="tach-active" />}
+          <line
+            x1={ARC_CENTER}
+            y1={ARC_CENTER - ARC_RADIUS - 8}
+            x2={ARC_CENTER}
+            y2={ARC_CENTER - ARC_RADIUS + 4}
+            className="tach-tick"
+            transform={`rotate(${redlineStart - 90} ${ARC_CENTER} ${ARC_CENTER})`}
+          />
         </svg>
+
+        <div className="tach-readout">
+          <div className="tach-val">{rpm.toLocaleString()}</div>
+          <div className="tach-unit">RPM</div>
+          <div className="tach-sub">RODIN 3D RECONSTRUCTION</div>
+        </div>
       </div>
 
-      {/* Boot log */}
-      <div className="preloader__log">
-        {lines.map((l, i) => (
-          <div key={i} className={`preloader__log-line ${i === lines.length - 1 ? "preloader__log-line--active" : ""}`}>
-            <span className="preloader__prompt">&gt; </span>
-            {l}
-            {i === lines.length - 1 && <span className="preloader__cursor">_</span>}
+      {/* Terminal boot text */}
+      <div className="preloader__log" aria-live="polite">
+        {lines.map((line, idx) => (
+          <div key={idx} className="preloader__line">
+            <span className="prefix">&gt;</span> {line}
           </div>
         ))}
       </div>
 
-      {/* Model loading state */}
-      {!modelReady && (
-        <div className="preloader__status">AWAITING MODEL...</div>
-      )}
+      {/* Status footer */}
+      <footer className="preloader__foot">
+        <span className="status">STATUS: {modelReady ? "READY" : "LOADING ASSET..."}</span>
+        <span className="hint">[PRESS ANY KEY TO SKIP]</span>
+      </footer>
     </div>
   );
 }
