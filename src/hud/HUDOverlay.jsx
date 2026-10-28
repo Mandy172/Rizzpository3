@@ -18,14 +18,75 @@ export const HUDOverlay = () => {
   const toggleInspectionMode = useScrollStore((s) => s.toggleInspectionMode);
   const inspectionView = useScrollStore((s) => s.inspectionView);
   const setInspectionView = useScrollStore((s) => s.setInspectionView);
+  const livery = useScrollStore((s) => s.livery);
+  const setLivery = useScrollStore((s) => s.setLivery);
+  const xrayMode = useScrollStore((s) => s.xrayMode);
+  const toggleXrayMode = useScrollStore((s) => s.toggleXrayMode);
+  const isRevving = useScrollStore((s) => s.isRevving);
+  const setIsRevving = useScrollStore((s) => s.setIsRevving);
 
+  const [showHotkeys, setShowHotkeys] = useState(false);
   const activePart = parts.find((p) => p.id === activePartId);
 
   // Target telemetry values
-  const targetRpm = Math.round(MOTORCYCLE_CONFIG.specs.idleRpm + progress * (MOTORCYCLE_CONFIG.specs.maxRpm - MOTORCYCLE_CONFIG.specs.idleRpm));
-  const targetSpeed = Math.round(progress * 185);
-  const gear = progress < 0.08 ? 'N' : progress < 0.22 ? '1' : progress < 0.4 ? '2' : progress < 0.6 ? '3' : progress < 0.8 ? '4' : progress < 0.95 ? '5' : '6';
+  const targetRpm = isRevving
+    ? 10250 + Math.round(Math.sin(Date.now() * 0.04) * 250)
+    : Math.round(MOTORCYCLE_CONFIG.specs.idleRpm + progress * (MOTORCYCLE_CONFIG.specs.maxRpm - MOTORCYCLE_CONFIG.specs.idleRpm));
+  const targetSpeed = isRevving
+    ? Math.max(Math.round(progress * 185), 142)
+    : Math.round(progress * 185);
+  const gear = isRevving
+    ? '5'
+    : progress < 0.08 ? 'N' : progress < 0.22 ? '1' : progress < 0.4 ? '2' : progress < 0.6 ? '3' : progress < 0.8 ? '4' : progress < 0.95 ? '5' : '6';
   const leanAngle = Math.sin(progress * Math.PI * 4) * 44;
+
+  // Global Keyboard Shortcuts (Space to rev, X for xray, C for livery, I for inspect, 1-0 for parts)
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space' && !e.repeat) {
+        e.preventDefault();
+        setIsRevving(true);
+      } else if (e.key === 'x' || e.key === 'X') {
+        toggleXrayMode();
+      } else if (e.key === 'c' || e.key === 'C') {
+        setLivery(livery === 'racing' ? 'prismatic' : livery === 'prismatic' ? 'acid-gold' : 'racing');
+      } else if (e.key === 'i' || e.key === 'I') {
+        toggleInspectionMode();
+      } else if (e.key === 'm' || e.key === 'M') {
+        setMuted((m) => !m);
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+        else document.exitFullscreen().catch(() => {});
+      } else if (e.key >= '1' && e.key <= '9') {
+        const idx = parseInt(e.key, 10);
+        if (window.__lenis) {
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          window.__lenis.scrollTo((idx / 12) * maxScroll);
+        }
+      } else if (e.key === '0') {
+        if (window.__lenis) {
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          window.__lenis.scrollTo((10 / 12) * maxScroll);
+        }
+      } else if (e.key === '?') {
+        setShowHotkeys((s) => !s);
+      }
+    };
+
+    const onKeyUp = (e) => {
+      if (e.code === 'Space') {
+        setIsRevving(false);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+    };
+  }, [setIsRevving, toggleXrayMode, setLivery, toggleInspectionMode, setMuted, livery]);
 
   // Smoothed numeric displays for racing gauge realism
   const [smoothRpm, setSmoothRpm] = useState(targetRpm);
@@ -74,6 +135,41 @@ export const HUDOverlay = () => {
 
         {/* Global HUD Quick Controls & 360° Inspection Toolbar */}
         <div className="flex flex-wrap items-center gap-3">
+          {/* Livery / Colorway Selector Toolbar */}
+          <div className="flex items-center gap-1 bg-surface border border-blueprint p-1">
+            <span className="font-mono text-[9px] text-muted px-1.5 hidden lg:inline">LIVERY:</span>
+            {[
+              { id: 'racing', label: 'SQUADRA', dot: '#e10600' },
+              { id: 'prismatic', label: 'PRISMATIC', dot: '#a855f7' },
+              { id: 'acid-gold', label: 'GOLD', dot: '#d4ff00' },
+            ].map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setLivery(item.id)}
+                className={`flex items-center gap-1.5 font-mono text-[10px] px-2 py-1 transition-colors ${
+                  livery === item.id ? 'bg-white/10 text-text font-bold border-b border-accent' : 'text-muted hover:text-text'
+                }`}
+                title={`Switch to ${item.label} livery [C]`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: item.dot }} />
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* X-Ray / Blueprint Mode Toggle */}
+          <button
+            onClick={toggleXrayMode}
+            className={`font-mono text-xs px-3 py-1.5 border transition-all ${
+              xrayMode
+                ? 'bg-cyan-500/20 text-cyan-300 font-bold border-cyan-400 shadow-md shadow-cyan-500/20'
+                : 'bg-surface text-text border-blueprint hover:border-cyan-400'
+            }`}
+            title="Toggle X-Ray / Blueprint Hologram [X]"
+          >
+            {xrayMode ? '✦ X-RAY ACTIVE' : 'X-RAY'}
+          </button>
+
           {/* 360° Inspection Mode Toggle */}
           <button
             onClick={toggleInspectionMode}
@@ -83,7 +179,7 @@ export const HUDOverlay = () => {
                 : 'bg-surface text-text border-blueprint hover:border-accent'
             }`}
           >
-            {inspectionMode ? '✦ 360° INSPECT ACTIVE' : 'INSPECT 360°'}
+            {inspectionMode ? '✦ 360° ACTIVE' : '360°'}
           </button>
 
           {/* Quick Camera Angle Buttons in Inspection Mode */}
@@ -117,7 +213,7 @@ export const HUDOverlay = () => {
               lowPower ? 'bg-hud text-bg font-bold' : 'bg-surface text-text hover:border-accent'
             }`}
           >
-            PWR: {lowPower ? 'LOW-RES' : 'ULTRA'}
+            PWR: {lowPower ? 'LOW' : 'ULTRA'}
           </button>
 
           {/* Audio Mute Toggle */}
@@ -126,8 +222,18 @@ export const HUDOverlay = () => {
             className={`font-mono text-xs px-3 py-1.5 border border-blueprint transition-colors ${
               muted ? 'bg-surface text-muted' : 'bg-accent text-white font-bold'
             }`}
+            title="Mute / Unmute Audio [M]"
           >
-            AUDIO: {muted ? 'MUTED' : 'LIVE'}
+            {muted ? 'MUTED' : 'LIVE 🔊'}
+          </button>
+
+          {/* Hotkeys Quick Reference Pill */}
+          <button
+            onClick={() => setShowHotkeys((s) => !s)}
+            className="font-mono text-xs px-2.5 py-1.5 border border-blueprint bg-surface text-muted hover:text-hud hover:border-hud transition-colors"
+            title="Keyboard Shortcuts [?]"
+          >
+            KEYS ?
           </button>
 
           {/* Telemetry Stage Index */}
@@ -212,6 +318,23 @@ export const HUDOverlay = () => {
             <span className="text-muted mr-2">SCROLL-VEL</span>
             <span className="text-hud font-bold">{Math.abs(scrollVelocity).toFixed(2)}</span>
           </div>
+
+          {/* Interactive Throttle Button */}
+          <button
+            onMouseDown={() => setIsRevving(true)}
+            onMouseUp={() => setIsRevving(false)}
+            onTouchStart={() => setIsRevving(true)}
+            onTouchEnd={() => setIsRevving(false)}
+            className={`border px-3 py-1.5 transition-all flex items-center gap-2 ${
+              isRevving
+                ? 'bg-accent text-white font-bold border-accent shadow-md shadow-accent/40 animate-pulse'
+                : 'bg-surface text-hud border-blueprint hover:border-accent'
+            }`}
+            title="Hold spacebar or mouse to rev engine"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+            <span className="text-[10px]">{isRevving ? 'REV 10,500 RPM!' : 'HOLD TO REV [SPACE]'}</span>
+          </button>
         </div>
 
         {/* Legal Disclaimer & Attribution */}
@@ -226,6 +349,71 @@ export const HUDOverlay = () => {
           </div>
         </div>
       </footer>
+
+      {/* ================= KEYBOARD SHORTCUTS MODAL ================= */}
+      {showHotkeys && (
+        <div
+          onClick={() => setShowHotkeys(false)}
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 pointer-events-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-md w-full bg-surface border-2 border-accent p-6 shadow-2xl font-mono text-xs text-text"
+          >
+            <div className="flex items-center justify-between border-b border-subtle pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-hud inline-block" />
+                <span className="font-anton text-lg tracking-wider text-text uppercase">FLIGHT DECK // KEY COMMANDS</span>
+              </div>
+              <button
+                onClick={() => setShowHotkeys(false)}
+                className="text-muted hover:text-accent font-bold px-2 py-0.5 border border-blueprint"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="flex items-center justify-between border-b border-subtle/40 pb-1.5">
+                <span className="text-muted">HOLD [SPACE]</span>
+                <span className="text-accent font-bold">REV THROTTLE</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-subtle/40 pb-1.5">
+                <span className="text-muted">KEY [X]</span>
+                <span className="text-cyan-400 font-bold">X-RAY BLUEPRINT</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-subtle/40 pb-1.5">
+                <span className="text-muted">KEY [C]</span>
+                <span className="text-hud font-bold">CYCLE LIVERY</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-subtle/40 pb-1.5">
+                <span className="text-muted">KEY [I]</span>
+                <span className="text-text font-bold">360° INSPECT</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-subtle/40 pb-1.5">
+                <span className="text-muted">KEYS [1 - 0]</span>
+                <span className="text-hud font-bold">JUMP TO PART</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-subtle/40 pb-1.5">
+                <span className="text-muted">KEY [M]</span>
+                <span className="text-text font-bold">MUTE AUDIO</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-subtle/40 pb-1.5">
+                <span className="text-muted">KEY [F]</span>
+                <span className="text-text font-bold">FULLSCREEN</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-subtle/40 pb-1.5">
+                <span className="text-muted">SCROLL</span>
+                <span className="text-hud font-bold">ANATOMY TRIP</span>
+              </div>
+            </div>
+
+            <div className="text-[10px] text-muted text-center border-t border-subtle pt-3">
+              CLICK ANYWHERE OUTSIDE OR PRESS ESC TO DISMISS
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

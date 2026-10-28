@@ -80,14 +80,15 @@ function createEngine(context, recording) {
 
 function tuneEngine(engine, state) {
   const now = engine.context.currentTime;
-  const velocity = Math.min(Math.abs(state.scrollVelocity) / MAX_SCROLL_VELOCITY, 1);
-  const active = velocity > 0.008 && !state.muted;
-  const playbackRate = 0.74 + velocity * 0.68;
-  const volume = active ? 0.04 + Math.pow(velocity, 0.95) * 0.58 : 0;
+  const isRevving = state.isRevving;
+  const velocity = isRevving ? 1.0 : Math.min(Math.abs(state.scrollVelocity) / MAX_SCROLL_VELOCITY, 1);
+  const active = (velocity > 0.008 || isRevving) && !state.muted;
+  const playbackRate = isRevving ? 1.52 : 0.74 + velocity * 0.68;
+  const volume = active ? (isRevving ? 0.65 : 0.04 + Math.pow(velocity, 0.95) * 0.58) : 0;
 
-  smoothParam(engine.source.playbackRate, playbackRate, now, 0.14);
-  smoothParam(engine.lowPass.frequency, 4200 + velocity * 5200, now, 0.16);
-  smoothParam(engine.master.gain, volume, now, 0.13);
+  smoothParam(engine.source.playbackRate, playbackRate, now, isRevving ? 0.08 : 0.14);
+  smoothParam(engine.lowPass.frequency, isRevving ? 9500 : 4200 + velocity * 5200, now, 0.16);
+  smoothParam(engine.master.gain, volume, now, isRevving ? 0.06 : 0.13);
 }
 
 export default function EngineAudio() {

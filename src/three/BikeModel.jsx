@@ -34,6 +34,28 @@ export const BikeModel = () => {
   const progress = useScrollStore((s) => s.progress);
   const inspectionMode = useScrollStore((s) => s.inspectionMode);
   const inspectionView = useScrollStore((s) => s.inspectionView);
+  const livery = useScrollStore((s) => s.livery);
+  const xrayMode = useScrollStore((s) => s.xrayMode);
+  const isRevving = useScrollStore((s) => s.isRevving);
+
+  // Official Aprilia Colorway / Livery Palettes
+  const LIVERIES = useMemo(() => ({
+    racing: {
+      accent: new THREE.Color('#e10600'), // Aprilia Squadra Red
+      body: new THREE.Color('#0a0c10'), // Factory Gloss Black
+      metal: new THREE.Color('#94a3b8'), // Dual-beam silver alloy
+    },
+    prismatic: {
+      accent: new THREE.Color('#a855f7'), // Ultraviolet Neon
+      body: new THREE.Color('#14151b'), // Prismatic Carbon
+      metal: new THREE.Color('#384152'), // Dark Anodized
+    },
+    'acid-gold': {
+      accent: new THREE.Color('#d4ff00'), // Fluorescent Acid Yellow
+      body: new THREE.Color('#232616'), // Metallic Olive
+      metal: new THREE.Color('#cbd5e1'), // Silver Alloy
+    },
+  }), []);
 
   // Use the same repaired asset in every power mode; low power only changes rendering cost.
   const { scene } = useGLTF(MOTORCYCLE_CONFIG.modelUrl);
@@ -80,8 +102,12 @@ export const BikeModel = () => {
         if (child.material && child.material.isMeshStandardMaterial) {
           const mat = child.material.clone();
           originalMaterialsRef.current.set(child, {
+            origColor: mat.color ? mat.color.clone() : new THREE.Color(1, 1, 1),
             origEmissive: mat.emissive ? mat.emissive.clone() : new THREE.Color(0, 0, 0),
             origEmissiveIntensity: mat.emissiveIntensity || 0,
+            origWireframe: mat.wireframe || false,
+            origTransparent: mat.transparent || false,
+            origOpacity: mat.opacity ?? 1.0,
           });
           child.material = mat;
         }
@@ -101,6 +127,50 @@ export const BikeModel = () => {
 
     setModelReady(true);
   }, [scene, setModelReady]);
+
+  // Real-time Livery Colorways & X-Ray Blueprint Transformations
+  useEffect(() => {
+    if (!scene) return;
+    const cfg = LIVERIES[livery] || LIVERIES.racing;
+
+    scene.traverse((child) => {
+      if (child.isMesh && child.material) {
+        const orig = originalMaterialsRef.current.get(child);
+        const name = child.name || '';
+        const matName = child.material.name || '';
+        const isBodywork = name.includes('Bodywork') || name.includes('Tank') || name.includes('Seat') || name.includes('Windscreen');
+
+        if (xrayMode) {
+          if (isBodywork) {
+            child.material.wireframe = true;
+            child.material.transparent = true;
+            child.material.opacity = 0.28;
+            child.material.color.set('#00f0ff');
+          } else {
+            child.material.wireframe = false;
+            child.material.transparent = orig ? orig.origTransparent : false;
+            child.material.opacity = orig ? orig.origOpacity : 1.0;
+            if (orig) child.material.color.copy(orig.origColor);
+          }
+        } else {
+          // Normal mode with active livery palette
+          child.material.wireframe = false;
+          child.material.transparent = orig ? orig.origTransparent : false;
+          child.material.opacity = orig ? orig.origOpacity : 1.0;
+
+          if (matName.includes('Red') || matName.includes('Accent')) {
+            child.material.color.copy(cfg.accent);
+          } else if (matName.includes('Paint') || matName.includes('Gloss') || matName.includes('Black')) {
+            child.material.color.copy(cfg.body);
+          } else if (matName.includes('Silver') || matName.includes('Aluminium')) {
+            child.material.color.copy(cfg.metal);
+          } else if (orig) {
+            child.material.color.copy(orig.origColor);
+          }
+        }
+      }
+    });
+  }, [scene, livery, xrayMode, LIVERIES]);
 
   // Pointer interactions on model
   const handlePointerOver = useCallback((e) => {

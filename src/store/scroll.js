@@ -14,6 +14,9 @@ export const useScrollStore = create((set) => ({
   isTouch: false,
   inspectionMode: false,
   inspectionView: 'default', // 'default' | 'front' | 'side' | 'rear' | 'engine' | 'cockpit'
+  livery: 'racing', // 'racing' | 'prismatic' | 'acid-gold'
+  xrayMode: false,
+  isRevving: false,
 
   setProgress: (progress) => set({ progress, scrollProgress: progress }),
   setScrollProgress: (scrollProgress) => set({ progress: scrollProgress, scrollProgress }),
@@ -30,6 +33,10 @@ export const useScrollStore = create((set) => ({
   setInspectionMode: (inspectionMode) => set((state) => ({ inspectionMode: typeof inspectionMode === 'function' ? inspectionMode(state.inspectionMode) : inspectionMode })),
   toggleInspectionMode: () => set((state) => ({ inspectionMode: !state.inspectionMode })),
   setInspectionView: (inspectionView) => set({ inspectionView }),
+  setLivery: (livery) => set({ livery }),
+  toggleXrayMode: () => set((state) => ({ xrayMode: !state.xrayMode })),
+  setXrayMode: (xrayMode) => set({ xrayMode }),
+  setIsRevving: (isRevving) => set({ isRevving }),
 }));
 
 export const useStore = useScrollStore;
