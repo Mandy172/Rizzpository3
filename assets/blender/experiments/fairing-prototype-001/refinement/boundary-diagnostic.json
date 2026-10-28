@@ -1,0 +1,939 @@
+{
+  "blender_version": "5.2.3 LTS",
+  "source_blend": "assets/blender/experiments/fairing-prototype-001/refinement/fairing-prototype-001-refinement.blend",
+  "panel_boundary_edges": 321,
+  "shell_boundary_edges": 2109,
+  "direct_exact_panel_shell_edge_matches_1e-6": 300,
+  "summary": {
+    "mismatches": 21,
+    "both_endpoints_coincident_with_shell_vertices_at_1e-5": 0,
+    "full_shell_chain_at_1e-5": 0,
+    "source_edge_present": 21,
+    "source_boundary_edge_present": 21,
+    "endpoint_pairs_noncoincident": 21
+  },
+  "mismatches": [
+    {
+      "panel_boundary_edge_index": 615,
+      "panel_face_index": 639,
+      "panel_face_center": [
+        -0.32011944,
+        1.41929054,
+        1.50996673
+      ],
+      "endpoint_a": [
+        -0.32543379,
+        1.41680932,
+        1.51006079
+      ],
+      "endpoint_b": [
+        -0.32519749,
+        1.41544318,
+        1.51388299
+      ],
+      "length": 0.004065888,
+      "nearest_shell_endpoint_distances": [
+        0.177487544,
+        0.174125471
+      ],
+      "nearest_shell_vertex_indices": [
+        11992,
+        11992
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 619,
+      "panel_face_index": 885,
+      "panel_face_center": [
+        -0.31944007,
+        1.41657472,
+        1.51325333
+      ],
+      "endpoint_a": [
+        -0.32519749,
+        1.41544318,
+        1.51388299
+      ],
+      "endpoint_b": [
+        -0.3237347,
+        1.4114641,
+        1.51669514
+      ],
+      "length": 0.005087342,
+      "nearest_shell_endpoint_distances": [
+        0.174125471,
+        0.172248627
+      ],
+      "nearest_shell_vertex_indices": [
+        11992,
+        11992
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 844,
+      "panel_face_index": 297,
+      "panel_face_center": [
+        -0.32335255,
+        1.56849289,
+        1.16389966
+      ],
+      "endpoint_a": [
+        -0.31822062,
+        1.5804882,
+        1.15438676
+      ],
+      "endpoint_b": [
+        -0.31996888,
+        1.56735778,
+        1.1750319
+      ],
+      "length": 0.024529297,
+      "nearest_shell_endpoint_distances": [
+        0.0,
+        0.023526922
+      ],
+      "nearest_shell_vertex_indices": [
+        13249,
+        13243
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 12079,
+          "distance": 0.01309405,
+          "material_index": 0
+        },
+        {
+          "face": 12078,
+          "distance": 0.01810943,
+          "material_index": 0
+        },
+        {
+          "face": 12080,
+          "distance": 0.02708055,
+          "material_index": 0
+        },
+        {
+          "face": 12081,
+          "distance": 0.04007708,
+          "material_index": 0
+        },
+        {
+          "face": 12083,
+          "distance": 0.05813153,
+          "material_index": 0
+        }
+      ]
+    },
+    {
+      "panel_boundary_edge_index": 1106,
+      "panel_face_index": 228,
+      "panel_face_center": [
+        -0.18037403,
+        1.44415796,
+        1.80657816
+      ],
+      "endpoint_a": [
+        -0.23526645,
+        1.45255113,
+        1.77655935
+      ],
+      "endpoint_b": [
+        -0.22156978,
+        1.43576479,
+        1.83659685
+      ],
+      "length": 0.063826957,
+      "nearest_shell_endpoint_distances": [
+        0.072347934,
+        0.093087809
+      ],
+      "nearest_shell_vertex_indices": [
+        5951,
+        13677
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1107,
+      "panel_face_index": 229,
+      "panel_face_center": [
+        -0.16520178,
+        1.42751765,
+        1.86595941
+      ],
+      "endpoint_a": [
+        -0.22156978,
+        1.43576479,
+        1.83659685
+      ],
+      "endpoint_b": [
+        -0.20492184,
+        1.41927075,
+        1.89532185
+      ],
+      "length": 0.063228415,
+      "nearest_shell_endpoint_distances": [
+        0.093087809,
+        0.097457678
+      ],
+      "nearest_shell_vertex_indices": [
+        13677,
+        11778
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1108,
+      "panel_face_index": 86,
+      "panel_face_center": [
+        -0.12649608,
+        1.39535332,
+        1.98065698
+      ],
+      "endpoint_a": [
+        -0.1635493,
+        1.38757324,
+        2.00864267
+      ],
+      "endpoint_b": [
+        -0.1855309,
+        1.40313363,
+        1.95267141
+      ],
+      "length": 0.062113595,
+      "nearest_shell_endpoint_distances": [
+        0.061597993,
+        0.096781936
+      ],
+      "nearest_shell_vertex_indices": [
+        9814,
+        9835
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1109,
+      "panel_face_index": 85,
+      "panel_face_center": [
+        -0.14718235,
+        1.41120219,
+        1.92399669
+      ],
+      "endpoint_a": [
+        -0.1855309,
+        1.40313363,
+        1.95267141
+      ],
+      "endpoint_b": [
+        -0.20492184,
+        1.41927075,
+        1.89532185
+      ],
+      "length": 0.062652915,
+      "nearest_shell_endpoint_distances": [
+        0.096781936,
+        0.097457678
+      ],
+      "nearest_shell_vertex_indices": [
+        9835,
+        11778
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1110,
+      "panel_face_index": 111,
+      "panel_face_center": [
+        -0.10329556,
+        1.38019133,
+        2.03593731
+      ],
+      "endpoint_a": [
+        -0.1635493,
+        1.38757324,
+        2.00864267
+      ],
+      "endpoint_b": [
+        -0.13912988,
+        1.37280965,
+        2.06323242
+      ],
+      "length": 0.061597993,
+      "nearest_shell_endpoint_distances": [
+        0.061597993,
+        0.0
+      ],
+      "nearest_shell_vertex_indices": [
+        9814,
+        9814
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1127,
+      "panel_face_index": 169,
+      "panel_face_center": [
+        -0.19249082,
+        1.46105862,
+        1.74591613
+      ],
+      "endpoint_a": [
+        -0.24580324,
+        1.46956587,
+        1.71527267
+      ],
+      "endpoint_b": [
+        -0.23526645,
+        1.45255113,
+        1.77655935
+      ],
+      "length": 0.064471572,
+      "nearest_shell_endpoint_distances": [
+        0.040086118,
+        0.072347934
+      ],
+      "nearest_shell_vertex_indices": [
+        9842,
+        5951
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 10926,
+          "distance": 0.0578008,
+          "material_index": 0
+        },
+        {
+          "face": 11133,
+          "distance": 0.06215764,
+          "material_index": 0
+        },
+        {
+          "face": 10925,
+          "distance": 0.06228662,
+          "material_index": 0
+        },
+        {
+          "face": 11179,
+          "distance": 0.06856944,
+          "material_index": 0
+        },
+        {
+          "face": 10928,
+          "distance": 0.06970642,
+          "material_index": 0
+        }
+      ]
+    },
+    {
+      "panel_boundary_edge_index": 1437,
+      "panel_face_index": 882,
+      "panel_face_center": [
+        -0.31991869,
+        1.41928744,
+        1.5056541
+      ],
+      "endpoint_a": [
+        -0.32543379,
+        1.41680932,
+        1.51006079
+      ],
+      "endpoint_b": [
+        -0.32444328,
+        1.41556287,
+        1.50522876
+      ],
+      "length": 0.005087559,
+      "nearest_shell_endpoint_distances": [
+        0.177487544,
+        0.18225231
+      ],
+      "nearest_shell_vertex_indices": [
+        11992,
+        11992
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1474,
+      "panel_face_index": 837,
+      "panel_face_center": [
+        -0.31621444,
+        1.40312505,
+        1.54792857
+      ],
+      "endpoint_a": [
+        -0.31820294,
+        1.38859344,
+        1.58338976
+      ],
+      "endpoint_b": [
+        -0.3237347,
+        1.4114641,
+        1.51669514
+      ],
+      "length": 0.070723685,
+      "nearest_shell_endpoint_distances": [
+        0.121406543,
+        0.172248627
+      ],
+      "nearest_shell_vertex_indices": [
+        11992,
+        11992
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1475,
+      "panel_face_index": 839,
+      "panel_face_center": [
+        -0.32087445,
+        1.43079758,
+        1.47082686
+      ],
+      "endpoint_a": [
+        -0.32444328,
+        1.41556287,
+        1.50522876
+      ],
+      "endpoint_b": [
+        -0.32721829,
+        1.43998981,
+        1.44022369
+      ],
+      "length": 0.069498448,
+      "nearest_shell_endpoint_distances": [
+        0.18225231,
+        0.240477346
+      ],
+      "nearest_shell_vertex_indices": [
+        11992,
+        11991
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1544,
+      "panel_face_index": 675,
+      "panel_face_center": [
+        -0.32491684,
+        1.58038306,
+        1.15106893
+      ],
+      "endpoint_a": [
+        -0.32101524,
+        1.586254,
+        1.1503557
+      ],
+      "endpoint_b": [
+        -0.32124329,
+        1.58456612,
+        1.15300107
+      ],
+      "length": 0.003146261,
+      "nearest_shell_endpoint_distances": [
+        0.003146261,
+        0.0
+      ],
+      "nearest_shell_vertex_indices": [
+        13265,
+        13265
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 12079,
+          "distance": 0.00862018,
+          "material_index": 0
+        },
+        {
+          "face": 12078,
+          "distance": 0.01917743,
+          "material_index": 0
+        },
+        {
+          "face": 12080,
+          "distance": 0.02956359,
+          "material_index": 0
+        },
+        {
+          "face": 12081,
+          "distance": 0.04293719,
+          "material_index": 0
+        },
+        {
+          "face": 12083,
+          "distance": 0.06097672,
+          "material_index": 0
+        }
+      ]
+    },
+    {
+      "panel_boundary_edge_index": 1590,
+      "panel_face_index": 710,
+      "panel_face_center": [
+        -0.21426117,
+        1.47438455,
+        1.67924798
+      ],
+      "endpoint_a": [
+        -0.25953296,
+        1.47474086,
+        1.68189728
+      ],
+      "endpoint_b": [
+        -0.26507756,
+        1.47402811,
+        1.67659867
+      ],
+      "length": 0.007702334,
+      "nearest_shell_endpoint_distances": [
+        0.013556848,
+        0.006178241
+      ],
+      "nearest_shell_vertex_indices": [
+        13665,
+        13665
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 11179,
+          "distance": 0.02455896,
+          "material_index": 0
+        },
+        {
+          "face": 11133,
+          "distance": 0.02596546,
+          "material_index": 0
+        },
+        {
+          "face": 12320,
+          "distance": 0.03493097,
+          "material_index": 0
+        },
+        {
+          "face": 10928,
+          "distance": 0.05835288,
+          "material_index": 0
+        },
+        {
+          "face": 10925,
+          "distance": 0.07816151,
+          "material_index": 0
+        }
+      ]
+    },
+    {
+      "panel_boundary_edge_index": 1619,
+      "panel_face_index": 722,
+      "panel_face_center": [
+        -0.20217055,
+        1.47167993,
+        1.70323193
+      ],
+      "endpoint_a": [
+        -0.24580324,
+        1.46956587,
+        1.71527267
+      ],
+      "endpoint_b": [
+        -0.25462598,
+        1.47379398,
+        1.69119096
+      ],
+      "length": 0.025993197,
+      "nearest_shell_endpoint_distances": [
+        0.040086118,
+        0.023173624
+      ],
+      "nearest_shell_vertex_indices": [
+        9842,
+        13665
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 11133,
+          "distance": 0.02831679,
+          "material_index": 0
+        },
+        {
+          "face": 11179,
+          "distance": 0.02892422,
+          "material_index": 0
+        },
+        {
+          "face": 12320,
+          "distance": 0.03628646,
+          "material_index": 0
+        },
+        {
+          "face": 10928,
+          "distance": 0.05686591,
+          "material_index": 0
+        },
+        {
+          "face": 10925,
+          "distance": 0.06238728,
+          "material_index": 0
+        }
+      ]
+    },
+    {
+      "panel_boundary_edge_index": 1633,
+      "panel_face_index": 729,
+      "panel_face_center": [
+        -0.21979249,
+        1.47313464,
+        1.67553449
+      ],
+      "endpoint_a": [
+        -0.26507756,
+        1.47402811,
+        1.67659867
+      ],
+      "endpoint_b": [
+        -0.27059549,
+        1.47224116,
+        1.67447031
+      ],
+      "length": 0.006178241,
+      "nearest_shell_endpoint_distances": [
+        0.006178241,
+        0.0
+      ],
+      "nearest_shell_vertex_indices": [
+        13665,
+        13665
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 11133,
+          "distance": 0.02732133,
+          "material_index": 0
+        },
+        {
+          "face": 11179,
+          "distance": 0.02908376,
+          "material_index": 0
+        },
+        {
+          "face": 12320,
+          "distance": 0.03999316,
+          "material_index": 0
+        },
+        {
+          "face": 10928,
+          "distance": 0.05700129,
+          "material_index": 0
+        }
+      ]
+    },
+    {
+      "panel_boundary_edge_index": 1634,
+      "panel_face_index": 730,
+      "panel_face_center": [
+        -0.2090354,
+        1.47426748,
+        1.68654418
+      ],
+      "endpoint_a": [
+        -0.25462598,
+        1.47379398,
+        1.69119096
+      ],
+      "endpoint_b": [
+        -0.25953296,
+        1.47474086,
+        1.68189728
+      ],
+      "length": 0.010552131,
+      "nearest_shell_endpoint_distances": [
+        0.023173624,
+        0.013556848
+      ],
+      "nearest_shell_vertex_indices": [
+        13665,
+        13665
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 11179,
+          "distance": 0.02196003,
+          "material_index": 0
+        },
+        {
+          "face": 11133,
+          "distance": 0.02449774,
+          "material_index": 0
+        },
+        {
+          "face": 12320,
+          "distance": 0.03176205,
+          "material_index": 0
+        },
+        {
+          "face": 10928,
+          "distance": 0.05793203,
+          "material_index": 0
+        },
+        {
+          "face": 10925,
+          "distance": 0.07194504,
+          "material_index": 0
+        }
+      ]
+    },
+    {
+      "panel_boundary_edge_index": 1930,
+      "panel_face_index": 822,
+      "panel_face_center": [
+        -0.32877246,
+        1.42089987,
+        1.47603452
+      ],
+      "endpoint_a": [
+        -0.32721829,
+        1.43998981,
+        1.44022369
+      ],
+      "endpoint_b": [
+        -0.32419696,
+        1.41339469,
+        1.51099873
+      ],
+      "length": 0.075667256,
+      "nearest_shell_endpoint_distances": [
+        0.240477346,
+        0.177228536
+      ],
+      "nearest_shell_vertex_indices": [
+        11991,
+        11992
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1931,
+      "panel_face_index": 828,
+      "panel_face_center": [
+        -0.32401741,
+        1.3951571,
+        1.54782665
+      ],
+      "endpoint_a": [
+        -0.32419696,
+        1.41339469,
+        1.51099873
+      ],
+      "endpoint_b": [
+        -0.31820294,
+        1.38859344,
+        1.58338976
+      ],
+      "length": 0.076756057,
+      "nearest_shell_endpoint_distances": [
+        0.177228536,
+        0.121406543
+      ],
+      "nearest_shell_vertex_indices": [
+        11992,
+        11992
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": []
+    },
+    {
+      "panel_boundary_edge_index": 1943,
+      "panel_face_index": 857,
+      "panel_face_center": [
+        -0.31283119,
+        1.57926238,
+        1.15952396
+      ],
+      "endpoint_a": [
+        -0.31754789,
+        1.58554065,
+        1.14644289
+      ],
+      "endpoint_b": [
+        -0.31996888,
+        1.56735778,
+        1.1750319
+      ],
+      "length": 0.033967773,
+      "nearest_shell_endpoint_distances": [
+        0.007590482,
+        0.023526922
+      ],
+      "nearest_shell_vertex_indices": [
+        13265,
+        13243
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 12079,
+          "distance": 0.00929704,
+          "material_index": 0
+        },
+        {
+          "face": 12078,
+          "distance": 0.01697675,
+          "material_index": 0
+        },
+        {
+          "face": 12080,
+          "distance": 0.02717557,
+          "material_index": 0
+        },
+        {
+          "face": 12081,
+          "distance": 0.04075461,
+          "material_index": 0
+        },
+        {
+          "face": 12083,
+          "distance": 0.05911334,
+          "material_index": 0
+        }
+      ]
+    },
+    {
+      "panel_boundary_edge_index": 1949,
+      "panel_face_index": 886,
+      "panel_face_center": [
+        -0.3233563,
+        1.5806874,
+        1.14763451
+      ],
+      "endpoint_a": [
+        -0.32101524,
+        1.586254,
+        1.1503557
+      ],
+      "endpoint_b": [
+        -0.31754789,
+        1.58554065,
+        1.14644289
+      ],
+      "length": 0.005276499,
+      "nearest_shell_endpoint_distances": [
+        0.003146261,
+        0.007590482
+      ],
+      "nearest_shell_vertex_indices": [
+        13265,
+        13265
+      ],
+      "shell_collinear_edge_chain_coverage_fraction": 0,
+      "chain_edge_indices": [],
+      "exact_edge_in_preserved_source_evaluated_mesh": true,
+      "exact_edge_was_original_source_boundary": true,
+      "nearby_remaining_shell_faces": [
+        {
+          "face": 12079,
+          "distance": 0.01071428,
+          "material_index": 0
+        },
+        {
+          "face": 12078,
+          "distance": 0.02124772,
+          "material_index": 0
+        },
+        {
+          "face": 12080,
+          "distance": 0.03190654,
+          "material_index": 0
+        },
+        {
+          "face": 12081,
+          "distance": 0.04540488,
+          "material_index": 0
+        },
+        {
+          "face": 12083,
+          "distance": 0.06351604,
+          "material_index": 0
+        }
+      ]
+    }
+  ]
+}

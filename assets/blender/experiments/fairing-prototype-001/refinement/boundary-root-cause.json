@@ -1,0 +1,63 @@
+{
+  "diagnosis_version": "Blender 5.2.3 LTS",
+  "original_prototype_mismatches": 21,
+  "verified_cause": "All 21 were edges already open in the preserved source shell before separation. They are not caused by non-coincident vertices, edge subdivision, or EdgeSplit. The same 21 edge segments remain source boundary edges when EdgeSplit is disabled and only Mirror is evaluated.",
+  "evidence": {
+    "original_panel_boundary_edges": 321,
+    "original_exact_panel_shell_edge_matches": 300,
+    "mismatch_edges_exactly_present_in_preserved_source_evaluated_mesh": 21,
+    "mismatch_edges_on_original_source_boundary_with_mirror_only": 21,
+    "mismatch_edges_on_original_source_boundary_with_mirror_and_edgesplit": 21,
+    "mismatch_edges_covered_by_remaining_shell_collinear_edge_chains": 0,
+    "mismatch_edges_with_both_endpoints_coincident_to_remaining_shell_vertices_at_1e-5": 0,
+    "mirror_only_total_source_boundary_edges": 1830,
+    "mirror_and_edgesplit_total_source_boundary_edges": 12858
+  },
+  "interpretation": "The source shell lacks adjacent faces along these particular edges. No amount of vertex snapping or edge subdivision can create a mating edge without adding/reconstructing faces. The minimal repair retained the candidate source-open-boundary faces in Bodywork_MainShell and limited the removable panel to the adjacent connected region. No faces were duplicated or added.",
+  "repair_result": {
+    "retained_candidate_faces_on_source_open_boundaries": 23,
+    "faces_removed_from_the_selected_panel_region": 21,
+    "refined_panel_faces": 887,
+    "refined_panel_boundary_edges": 323,
+    "matching_edges_before_origin_rebase": 323,
+    "unmatched_edges_before_origin_rebase": 0,
+    "assembled_geometry_triangle_change": 0
+  },
+  "post_transform_precision": {
+    "blender_exact_6_decimal_key_matches": 296,
+    "blender_key_mismatches": 27,
+    "distinct_corresponding_shell_edges_found": 323,
+    "max_endpoint_distance_blender_units": 1.1920928955078125e-07,
+    "glb_reimport_geometric_boundary_segments": 323,
+    "glb_direct_6_decimal_key_matches": 59,
+    "glb_direct_6_decimal_key_mismatches": 264,
+    "glb_distinct_corresponding_shell_edges_found": 323,
+    "glb_max_endpoint_distance_blender_units": 5.331201499700045e-07,
+    "note": "Strict key mismatches are reported as-is. The separated-object origin rebase and glTF transform/vertex splitting produce sub-micron coordinate roundoff; every boundary segment still has a distinct corresponding shell segment, and the exact distances are recorded rather than widening the equality check."
+  },
+  "detailed_per_edge_records": "boundary-diagnostic.json",
+  "after_counts": {
+    "motorcycle_mesh_objects": 19,
+    "total_evaluated_triangles": 428688,
+    "source_total_triangles": 428688,
+    "original_shell_evaluated_triangles": 74896,
+    "refined_shell_evaluated_triangles": 73109,
+    "refined_panel_evaluated_triangles": 1787,
+    "original_panel_faces": 908,
+    "refined_panel_faces": 887,
+    "refined_panel_boundary_edges": 323
+  },
+  "pivot": {
+    "world_xyz": [
+      -0.31707823,
+      1.23127925,
+      2.1102047
+    ],
+    "choice": "Practical upper near-side panel vertex; no authored attachment/fastener object is present in the source hierarchy.",
+    "origin_rebase_max_world_vertex_displacement": 1.1920928955078125e-07,
+    "move_test_world_units": 0.04,
+    "rotation_test_degrees": 6,
+    "other_object_transforms_unchanged": true
+  },
+  "visual_assessment": "Assembled silhouette and appearance remain visually consistent. The boundary overlay is still angular/irregular because the source has no authored panel seam. Do not continue with other panels until a designed cutline or retopology workflow is agreed."
+}

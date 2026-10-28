@@ -1,0 +1,48 @@
+{
+  "blender_version": "5.2.3 LTS",
+  "panel": "Fairing_Left_Lower",
+  "panel_faces": 887,
+  "panel_vertices": 1053,
+  "panel_triangles": 1787,
+  "remaining_shell_faces": 36067,
+  "remaining_shell_triangles": 73109,
+  "mesh_objects_excluding_backup": 19,
+  "total_evaluated_motorcycle_triangles": 428688,
+  "panel_boundary_edges": 323,
+  "shell_boundary_edges": 2153,
+  "exact_6_decimal_key_matches_after_origin_rebase": 296,
+  "exact_key_mismatches_after_origin_rebase": 27,
+  "boundary_edges_with_corresponding_shell_segments_within_1e-6": 323,
+  "maximum_endpoint_error_to_nearest_shell_edge_world_units": 1.1920928955078125e-07,
+  "distinct_shell_edges_used_for_nearest_match": 323,
+  "panel_material_face_counts": {
+    "Paint_Black_Gloss": 887
+  },
+  "panel_uv_layers": [
+    "UVMap"
+  ],
+  "panel_pivot_world_xyz": [
+    -0.31707823,
+    1.23127925,
+    2.1102047
+  ],
+  "nearest_panel_vertex_distance": 4.1295309247228556e-07,
+  "pivot_is_practical_not_authored_mount": true,
+  "max_world_displacement_during_origin_change": 1.1920928955078125e-07,
+  "blend_path": "assets/blender/experiments/fairing-prototype-001/refinement/fairing-prototype-001-refined.blend",
+  "blend_bytes": 15232745,
+  "glb_path": "assets/blender/experiments/fairing-prototype-001/refinement/fairing-prototype-001-refined.glb",
+  "glb_bytes": 11070876,
+  "non_panel_transforms_unchanged_during_move_and_rotation": true,
+  "panel_transform_restored_after_tests": true,
+  "move_distance_world_units": 0.04,
+  "rotation_degrees": 6.0,
+  "pivot_behavior_tested_in_blend": true,
+  "render_paths": [
+    "assets/blender/experiments/fairing-prototype-001/refinement/renders/refined_assembled_side.png",
+    "assets/blender/experiments/fairing-prototype-001/refinement/renders/panel_hidden.png",
+    "assets/blender/experiments/fairing-prototype-001/refinement/renders/panel_moved_outward.png",
+    "assets/blender/experiments/fairing-prototype-001/refinement/renders/panel_rotated_6deg.png",
+    "assets/blender/experiments/fairing-prototype-001/refinement/renders/boundary_closeup_overlay.png"
+  ]
+}

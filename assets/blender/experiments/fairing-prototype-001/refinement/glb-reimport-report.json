@@ -1,0 +1,54 @@
+{
+  "file": "assets/blender/experiments/fairing-prototype-001/refinement/fairing-prototype-001-refined.glb",
+  "bytes": 11070876,
+  "scene_objects": 28,
+  "mesh_objects": 19,
+  "triangles": 428688,
+  "faces": 428688,
+  "vertices": 338893,
+  "materials": 14,
+  "material_names": [
+    "Badge_Silver",
+    "Glass_Amber_Indicator",
+    "Glass_Clear_Lens",
+    "Glass_Smoked_Windscreen",
+    "Metal_Aluminium",
+    "Metal_Dark_Steel",
+    "Metal_Silver",
+    "Metal_Titanium_Gold",
+    "Paint_Black_Gloss",
+    "Paint_Red_Accent",
+    "Rubber_Grip",
+    "Rubber_Tire",
+    "Seat_Black_Leather",
+    "Trim_Matte_Black"
+  ],
+  "image_textures": [],
+  "panel_present_and_nonempty": true,
+  "panel_faces": 1787,
+  "panel_triangles": 1787,
+  "panel_parent": "Bodywork",
+  "shell_parent": "Bodywork",
+  "panel_uv_layers": [
+    "UVMap"
+  ],
+  "panel_material_face_counts": {
+    "Paint_Black_Gloss": 1787
+  },
+  "panel_normals_finite": true,
+  "backup_present": false,
+  "panel_geometric_boundary_edges_after_duplicate_vertex_collapse_by_exact_world_coordinate_key": 323,
+  "shell_geometric_boundary_edges_after_duplicate_vertex_collapse_by_exact_world_coordinate_key": 2153,
+  "exact_6_decimal_key_matches": 59,
+  "exact_6_decimal_key_mismatches": 264,
+  "nearest_shell_edge_max_endpoint_error": 5.331201499700045e-07,
+  "distinct_nearest_shell_edges": 323,
+  "pivot_world_xyz": [
+    -0.317078233,
+    1.231279254,
+    2.110204697
+  ],
+  "reimport_move_other_nodes_unchanged": true,
+  "reimport_rotation_other_nodes_unchanged": true,
+  "panel_transform_restored_after_test": true
+}
