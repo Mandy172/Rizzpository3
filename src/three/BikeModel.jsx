@@ -45,7 +45,6 @@ export const BikeModel = () => {
   const outerReticleRef = useRef();
   const innerReticleRef = useRef();
   const smoothedReticlePos = useRef(new THREE.Vector3(0.64, 0.54, 0.15));
-  const wheelsRef = useRef([]);
   const meshPartMapRef = useRef(new Map());
   const originalMaterialsRef = useRef(new Map());
 
@@ -65,15 +64,10 @@ export const BikeModel = () => {
   useEffect(() => {
     if (!scene) return;
 
-    const wheels = [];
     meshPartMapRef.current.clear();
     originalMaterialsRef.current.clear();
 
     scene.traverse((child) => {
-      if (child.name.includes('Wheel_Assembly') || child.name === 'Wheel_Front' || child.name === 'Rear_Wheel') {
-        wheels.push(child);
-      }
-
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -187,12 +181,12 @@ export const BikeModel = () => {
 
       targetFov = THREE.MathUtils.lerp(kfCurrent.fov, kfNext.fov, easedT);
 
-      // Multi-frequency organic camera breathing across all stages
-      const breatheTime = state.clock.elapsedTime * 0.75;
-      const breatheAmp = segIndex === 0 ? 0.04 : 0.016;
-      targetCamPos.z += Math.sin(breatheTime * 0.7) * breatheAmp;
-      targetCamPos.y += Math.cos(breatheTime * 1.1) * (breatheAmp * 0.6);
-      targetCamPos.x += Math.sin(breatheTime * 0.4) * (breatheAmp * 0.4);
+      // Subtle atmospheric camera drift only during intro hero stage
+      if (segIndex === 0) {
+        const driftSpeed = state.clock.elapsedTime * 0.25;
+        targetCamPos.z += Math.sin(driftSpeed) * 0.04;
+        targetCamPos.y += Math.cos(driftSpeed * 0.8) * 0.02;
+      }
     }
 
     // Responsive FOV adjustment for portrait mobile screens
@@ -203,26 +197,14 @@ export const BikeModel = () => {
       }
     }
 
-    // Framerate-independent exponential smoothing
-    const dampFactor = 1 - Math.exp(-8.5 * Math.min(delta, 0.1));
-    camera.position.lerp(targetCamPos, dampFactor);
-    reusable.currentLookAt.lerp(targetLookAt, dampFactor);
+    // Rock-solid smooth camera tracking (no gimbal fight, zero shake)
+    camera.position.lerp(targetCamPos, 0.1);
+    reusable.currentLookAt.lerp(targetLookAt, 0.1);
     camera.lookAt(reusable.currentLookAt);
 
-    // Dynamic motorcycle banking roll when turning and scrolling
-    const scrollVel = useScrollStore.getState().scrollVelocity || 0;
-    const targetRoll = -Math.sin(curProgress * Math.PI * 3.5) * 0.032 - Math.max(-0.05, Math.min(0.05, scrollVel * 0.012));
-    camera.rotation.z = THREE.MathUtils.lerp(camera.rotation.z, targetRoll, dampFactor);
-
     if (Math.abs(camera.fov - targetFov) > 0.05) {
-      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, dampFactor);
+      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, 0.1);
       camera.updateProjectionMatrix();
-    }
-
-    // Dynamic Wheel Spin synchronized with scroll progress & velocity
-    const wheelSpinAngle = curProgress * Math.PI * 26 + scrollVel * 0.02;
-    for (let i = 0; i < wheelsRef.current.length; i++) {
-      wheelsRef.current[i].rotation.z = wheelSpinAngle;
     }
 
     // Active & Hovered Part Mesh Emissive Pulse
