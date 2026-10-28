@@ -84,7 +84,7 @@ export default function Drive() {
           <div style={{ ...S.big, fontSize: 'clamp(48px, 10vw, 112px)' }}>RS 660 // DRIVE</div>
           <p style={{ ...S.mono, color: '#aaa', lineHeight: 1.8, margin: '20px auto' }}>
             {modelAvailable === false
-              ? 'Add the legally downloadable RS 660 GLB at public/models/aprilia-rs660.glb to enable this scene.'
+              ? 'The linked Sketchfab model is not marked downloadable. Obtain its GLB directly from the creator or an authorized purchase, confirm the license, then add it at public/models/aprilia-rs660.glb.'
               : 'CHECKING FOR THE RS 660 MODEL…'}
           </p>
           <a href="https://sketchfab.com/3d-models/aprilia-rs-660-2024-9c150ae84c364ffcb09778bec610d17e" target="_blank" rel="noreferrer" style={{ ...S.mono, color: '#e10600' }}>
