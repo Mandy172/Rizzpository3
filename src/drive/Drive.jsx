@@ -72,7 +72,11 @@ export default function Drive() {
   useEffect(() => {
     let cancelled = false;
     fetch(MODEL, { method: 'HEAD' })
-      .then((response) => !cancelled && setModelAvailable(response.ok))
+      .then((response) => {
+        const contentType = (response.headers.get('content-type') || '').toLowerCase();
+        const isGlb = contentType.includes('model/gltf-binary') || contentType.includes('application/octet-stream');
+        if (!cancelled) setModelAvailable(response.ok && isGlb);
+      })
       .catch(() => !cancelled && setModelAvailable(false));
     return () => { cancelled = true; };
   }, []);
