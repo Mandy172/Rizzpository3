@@ -7,16 +7,16 @@ import * as THREE from 'three';
  *   +X: Front, -X: Rear, +Y: Up (ground = 0), ±Z: Left / Right
  */
 export const partHotspots = {
-  'engine': new THREE.Vector3(-0.02, 0.39, 0.0),
-  'frame': new THREE.Vector3(-0.08, 0.58, 0.02),
-  'front-fork': new THREE.Vector3(0.78, 0.48, 0.02),
-  'front-brakes': new THREE.Vector3(0.73, 0.31, 0.14),
-  'electronics': new THREE.Vector3(0.32, 0.84, 0.0),
-  'winglets': new THREE.Vector3(0.88, 0.72, 0.0),
-  'exhaust': new THREE.Vector3(-0.57, 0.46, 0.0),
-  'swingarm-shock': new THREE.Vector3(-0.64, 0.55, 0.0),
-  'wheels': new THREE.Vector3(0.73, 0.31, 0.0),
-  'cockpit': new THREE.Vector3(0.43, 0.92, 0.0),
+  'engine': new THREE.Vector3(-0.02, 0.41, 0.18),
+  'frame': new THREE.Vector3(0.05, 0.58, 0.18),
+  'front-fork': new THREE.Vector3(0.64, 0.54, 0.15),
+  'front-brakes': new THREE.Vector3(0.70, 0.31, 0.15),
+  'electronics': new THREE.Vector3(0.32, 0.78, 0.12),
+  'winglets': new THREE.Vector3(0.68, 0.78, 0.22),
+  'exhaust': new THREE.Vector3(-0.56, 0.46, 0.22),
+  'swingarm-shock': new THREE.Vector3(-0.48, 0.46, 0.15),
+  'wheels': new THREE.Vector3(0.73, 0.31, 0.12),
+  'cockpit': new THREE.Vector3(0.44, 0.88, 0.15),
 };
 
 export const partPrefixes = {

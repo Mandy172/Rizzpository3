@@ -24,14 +24,14 @@ export const cameraKeyframes = [
   },
   {
     id: 'front-fork',
-    position: [1.12, 0.72, 0.98],
-    target: [0.78, 0.48, 0.02],
+    position: [1.12, 0.70, 0.96],
+    target: [0.64, 0.54, 0.12],
     fov: 28,
   },
   {
     id: 'front-brakes',
     position: [1.02, 0.39, 0.92],
-    target: [0.73, 0.31, 0.14],
+    target: [0.70, 0.31, 0.14],
     fov: 24,
   },
   {

@@ -21,10 +21,11 @@ export const ScrollContainer = () => {
   // Smooth scroll: Lenis wired to GSAP ScrollTrigger
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.08,
+      lerp: 0.065,
       smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 0.88,
+      touchMultiplier: 1.2,
+      duration: 1.2,
     });
 
     window.__lenis = lenis;

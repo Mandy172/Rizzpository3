@@ -43,6 +43,8 @@ export const BikeModel = () => {
   const modelRootRef = useRef();
   const hotspotMeshRef = useRef();
   const outerReticleRef = useRef();
+  const innerReticleRef = useRef();
+  const smoothedReticlePos = useRef(new THREE.Vector3(0.64, 0.54, 0.15));
   const wheelsRef = useRef([]);
   const meshPartMapRef = useRef(new Map());
   const originalMaterialsRef = useRef(new Map());
@@ -252,19 +254,24 @@ export const BikeModel = () => {
     // Dynamic 3D Telemetry Hotspot & Screen Leader-Line Projection
     const showTelemetryHotspot = !inspectionMode && currentActivePartId && partHotspots[currentActivePartId];
     if (showTelemetryHotspot) {
-      const hotspot = partHotspots[currentActivePartId];
-      reusable.hotspotWorldPos.copy(hotspot);
+      const targetHotspot = partHotspots[currentActivePartId];
+      // Smoothly glide 3D reticle to the component instead of snapping
+      smoothedReticlePos.current.lerp(targetHotspot, 0.22);
+      reusable.hotspotWorldPos.copy(smoothedReticlePos.current);
 
       // Animate 3D targeting reticle
       if (hotspotMeshRef.current) {
-        hotspotMeshRef.current.position.copy(hotspot);
+        hotspotMeshRef.current.position.copy(reusable.hotspotWorldPos);
         hotspotMeshRef.current.visible = true;
-        const pulse = 1 + Math.sin(state.clock.elapsedTime * 4.5) * 0.12;
+        const pulse = 1 + Math.sin(state.clock.elapsedTime * 4.5) * 0.08;
         hotspotMeshRef.current.scale.set(pulse, pulse, pulse);
         hotspotMeshRef.current.lookAt(camera.position);
 
         if (outerReticleRef.current) {
-          outerReticleRef.current.rotation.z = state.clock.elapsedTime * 1.8;
+          outerReticleRef.current.rotation.z = state.clock.elapsedTime * 1.4;
+        }
+        if (innerReticleRef.current) {
+          innerReticleRef.current.rotation.z = -state.clock.elapsedTime * 2.0;
         }
       }
 
@@ -306,39 +313,56 @@ export const BikeModel = () => {
         <primitive object={scene} />
       </group>
 
-      {/* 3D Telemetry Targeting Reticle Marker */}
-      <group ref={hotspotMeshRef} visible={false}>
+      {/* 3D Telemetry Targeting Reticle Marker (Depth-tested disabled to eliminate clipping on fork shockers/wheels) */}
+      <group ref={hotspotMeshRef} visible={false} renderOrder={999}>
         {/* Rotating outer segmented targeting ring */}
-        <mesh ref={outerReticleRef}>
-          <ringGeometry args={[0.082, 0.096, 32]} />
-          <meshBasicMaterial color="#e10600" transparent opacity={0.85} side={THREE.DoubleSide} />
+        <mesh ref={outerReticleRef} renderOrder={999}>
+          <ringGeometry args={[0.078, 0.090, 32]} />
+          <meshBasicMaterial color="#e10600" transparent opacity={0.88} depthTest={false} depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
         </mesh>
-        {/* Secondary inner telemetry ring */}
-        <mesh>
-          <ringGeometry args={[0.052, 0.058, 24]} />
-          <meshBasicMaterial color="#d4ff00" transparent opacity={0.65} side={THREE.DoubleSide} />
+        {/* Counter-rotating secondary inner telemetry ring */}
+        <mesh ref={innerReticleRef} renderOrder={999}>
+          <ringGeometry args={[0.050, 0.056, 24]} />
+          <meshBasicMaterial color="#d4ff00" transparent opacity={0.75} depthTest={false} depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
         </mesh>
         {/* Inner pulsing bullseye */}
-        <mesh>
-          <circleGeometry args={[0.02, 16]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.9} side={THREE.DoubleSide} />
+        <mesh renderOrder={999}>
+          <circleGeometry args={[0.016, 16]} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthTest={false} depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
         </mesh>
         {/* Crosshair accents */}
-        <mesh position={[0.11, 0, 0]}>
-          <planeGeometry args={[0.028, 0.005]} />
-          <meshBasicMaterial color="#e10600" />
+        <mesh position={[0.10, 0, 0]} renderOrder={999}>
+          <planeGeometry args={[0.024, 0.004]} />
+          <meshBasicMaterial color="#e10600" depthTest={false} depthWrite={false} toneMapped={false} />
         </mesh>
-        <mesh position={[-0.11, 0, 0]}>
-          <planeGeometry args={[0.028, 0.005]} />
-          <meshBasicMaterial color="#e10600" />
+        <mesh position={[-0.10, 0, 0]} renderOrder={999}>
+          <planeGeometry args={[0.024, 0.004]} />
+          <meshBasicMaterial color="#e10600" depthTest={false} depthWrite={false} toneMapped={false} />
         </mesh>
-        <mesh position={[0, 0.11, 0]}>
-          <planeGeometry args={[0.005, 0.028]} />
-          <meshBasicMaterial color="#e10600" />
+        <mesh position={[0, 0.10, 0]} renderOrder={999}>
+          <planeGeometry args={[0.004, 0.024]} />
+          <meshBasicMaterial color="#e10600" depthTest={false} depthWrite={false} toneMapped={false} />
         </mesh>
-        <mesh position={[0, -0.11, 0]}>
-          <planeGeometry args={[0.005, 0.028]} />
-          <meshBasicMaterial color="#e10600" />
+        <mesh position={[0, -0.10, 0]} renderOrder={999}>
+          <planeGeometry args={[0.004, 0.024]} />
+          <meshBasicMaterial color="#e10600" depthTest={false} depthWrite={false} toneMapped={false} />
+        </mesh>
+        {/* Holographic corner lock brackets */}
+        <mesh position={[0.075, 0.075, 0]} renderOrder={999}>
+          <planeGeometry args={[0.018, 0.003]} />
+          <meshBasicMaterial color="#d4ff00" depthTest={false} depthWrite={false} toneMapped={false} />
+        </mesh>
+        <mesh position={[-0.075, 0.075, 0]} renderOrder={999}>
+          <planeGeometry args={[0.018, 0.003]} />
+          <meshBasicMaterial color="#d4ff00" depthTest={false} depthWrite={false} toneMapped={false} />
+        </mesh>
+        <mesh position={[0.075, -0.075, 0]} renderOrder={999}>
+          <planeGeometry args={[0.018, 0.003]} />
+          <meshBasicMaterial color="#d4ff00" depthTest={false} depthWrite={false} toneMapped={false} />
+        </mesh>
+        <mesh position={[-0.075, -0.075, 0]} renderOrder={999}>
+          <planeGeometry args={[0.018, 0.003]} />
+          <meshBasicMaterial color="#d4ff00" depthTest={false} depthWrite={false} toneMapped={false} />
         </mesh>
       </group>
     </group>
