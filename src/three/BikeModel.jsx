@@ -88,13 +88,10 @@ export const BikeModel = () => {
       }
     });
 
-    wheelsRef.current = wheels;
-
     console.log(`[3D MODEL // ${MOTORCYCLE_CONFIG.visualModelName}] Loaded:`, {
       source: MOTORCYCLE_CONFIG.geometry.source,
       meshes: MOTORCYCLE_CONFIG.geometry.meshCount,
       mappedParts: meshPartMapRef.current.size,
-      wheelsFound: wheels.length,
       primitives: MOTORCYCLE_CONFIG.geometry.primitiveCount,
       vertices: MOTORCYCLE_CONFIG.geometry.vertexCount.toLocaleString(),
       triangles: MOTORCYCLE_CONFIG.geometry.triangleCount.toLocaleString(),
